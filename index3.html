@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio | El Güiro Tech</title>
+
+  <!-- Fuente retro -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    /* RESET --------------------------------------------------------- */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+    /* VARIABLES ----------------------------------------------------- */
+    :root{
+      --logo-size:64px;
+      --gap:14px;
+      --hud-height:calc(var(--logo-size) + 2*var(--gap));
+    }
+
+    /* BASE ---------------------------------------------------------- */
+    body{
+      background:#000;
+      color:#00FF00;
+      font-family:'Courier New', Courier, monospace;
+      overflow:hidden;
+    }
+
+    /* LOGO ---------------------------------------------------------- */
+    .logo{
+      position:fixed;top:var(--gap);left:var(--gap);
+      width:var(--logo-size);border-radius:8px;
+      filter:drop-shadow(0 0 6px #ff007c);
+      z-index:1000;
+    }
+
+    /* NAV HUD ------------------------------------------------------- */
+    .nav-bar{
+      position:fixed;
+      top:calc(var(--gap) + 8px);
+      left:calc(var(--logo-size) + 2*var(--gap) + 12px);
+      display:flex;gap:42px;align-items:center;
+      padding:6px 28px;
+      border:2px solid #00FF00;
+      background:rgba(0,0,0,.5);
+      box-shadow:0 0 12px #00FF0080 inset;
+      font-family:'Press Start 2P', monospace;
+      z-index:900;
+    }
+    .nav-bar a{
+      color:#00FF00;text-decoration:none;font-size:.8rem;position:relative;
+    }
+    .nav-bar a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:2px;background:#00FF00;transition:width .25s}
+    .nav-bar a:hover::after{width:100%}
+
+    /* TÍTULO -------------------------------------------------------- */
+    .titulo{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      font-family:'Press Start 2P', monospace;
+      font-size:4rem;text-align:center;
+      text-shadow:0 0 4px #00FF00,0 0 14px #00FF00;
+      animation:pulse 2.5s infinite;
+      transition:opacity .5s ease;
+    }
+    @keyframes pulse{
+      0%,100%{text-shadow:0 0 4px #00FF00,0 0 14px #00FF00}
+      50%    {text-shadow:0 0 10px #00FF00,0 0 24px #00FF00}
+    }
+
+    /* GLITCH -------------------------------------------------------- */
+    .glitch{
+      position:fixed;top:var(--hud-height);left:0;right:0;bottom:0;
+      background:repeating-linear-gradient(0deg,#00FF00,#00FF00 2px,#000 2px,#000 4px);
+      display:none;z-index:850;
+      animation:glitchScreen .4s ease-out forwards;
+    }
+    @keyframes glitchScreen{
+      0%{opacity:0;transform:scaleY(0)}
+      30%{opacity:1;transform:scaleY(1.05)}
+      70%{opacity:1;transform:scaleY(.95)}
+      100%{opacity:0;transform:scaleY(1)}
+    }
+
+    /* TERMINAL ------------------------------------------------------ */
+    .terminal{
+      position:fixed;
+      top:calc(var(--hud-height) + 24px);left:var(--gap);
+      font-size:1.6rem;white-space:pre;  /* <– white-space:pre conserva saltos */
+      display:none;z-index:900;
+    }
+    .terminal.active{display:block}
+    .cursor{
+      display:inline-block;width:1ch;height:1em;background:#00FF00;margin-left:2px;
+      animation:blink .7s step-end infinite;
+    }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  </style>
+</head>
+
+<body>
+
+  <!-- HUD ---------------------------------------------------------- -->
+  <img src="Imagenes/Logo.jpeg" alt="El Güiro Tech" class="logo">
+
+  <nav class="nav-bar" id="navBar">
+    <a href="#" data-key="principal">:echo&nbsp;Principal</a>
+    <a href="#" data-key="acerca">:echo&nbsp;Acerca_de</a>
+    <a href="#" data-key="servicios">:echo&nbsp;Servicios</a>
+  </nav>
+
+  <h1 class="titulo" id="titulo">EL&nbsp;GÜIRO&nbsp;TECH</h1>
+
+  <!-- GLITCH & TERMINAL ------------------------------------------- -->
+  <div class="glitch" id="glitch"></div>
+
+  <div class="terminal" id="terminal">
+    <span id="texto"></span><span class="cursor"></span>
+  </div>
+<script>
+/* Texto que se pega para cada opción — ¡todos terminan con punto! */
+const infoBloques = {
+  principal: `\nBienvenido al sistema principal.\nAquí verás tu panel y métricas clave.\n> listo.`,
+  acerca:    `\nSomos El Güiro Tech.\nApasionados por la electrónica y el software hechos en Guatemala desde 2025.`,
+  servicios: `\n• Desarrollo web\n• Automatización\n• Diseño de circuitos\n• Consultoría técnica\n¡Contáctanos!.`
+};
+
+const navBar   = document.getElementById('navBar');
+const titulo   = document.getElementById('titulo');
+const glitch   = document.getElementById('glitch');
+const terminal = document.getElementById('terminal');
+const texto    = document.getElementById('texto');
+
+navBar.addEventListener('click', e => {
+  if (e.target.tagName !== 'A') return;
+  e.preventDefault();
+
+  const key     = e.target.dataset.key;                         // principal | acerca | servicios
+  const palabra = e.target.innerText.trim().toLowerCase();      // texto de la opción
+  const bloque  = infoBloques[key];                             // párrafo completo
+
+  /* se difumina solo el título */
+  titulo.style.opacity = '0';
+
+  /* glitch bajo el HUD */
+  glitch.style.display = 'block';
+
+  setTimeout(() => {
+    glitch.style.display  = 'none';
+    titulo.style.display  = 'none';
+    terminal.classList.add('active');
+
+    /* Fase 1: escribir la palabra completa */
+    texto.textContent = '';
+    let i = 0;
+    const typeWord = setInterval(() => {
+      if (i < palabra.length) {
+        texto.textContent += palabra[i++];
+      } else {
+        clearInterval(typeWord);
+
+        /* Fase 2: pegar el párrafo SIN su último carácter */
+        const bodyWithoutLast = '\n' + bloque.slice(0, -1);
+        const lastChar        = bloque.slice(-1);  // normalmente '.'
+        texto.textContent    += bodyWithoutLast;
+
+        /* Fase 3: tras un pequeño delay, 'teclear' el último carácter */
+        setTimeout(() => {
+          texto.textContent += lastChar;
+        }, 2000);   // ← ajuste del retardo en ms
+      }
+    }, 200);       // velocidad de tipeo por carácter
+  }, 500);         // dura igual que la animación glitch
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8">
+  <title>El Güiro Tech – Seguimos trabajando</title>
+
+  <!-- TIP RÁPIDO:
+       Si ya usás Tailwind u otro framework, podés quitar estos estilos
+       y reemplazarlos por clases utilitarias.  -->
+  <style>
+ /* ---- NUEVAS VARIABLES ---- */
+:root{
+  --trail:#00bfff;           /* color de la estela */
+  --fg:#ffffff;
+  --bg:#0d1117;
+}
+
+/* ---- FONDO MÁS FUTURISTA ---- */
+body{
+  background:
+    radial-gradient(circle at 50% 50%, #0d1117 0%, #05060a 80%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+/* ---- IMG ESTÁTICA EN ESQUINA ---- */
+.logo{
+  position:fixed;
+  bottom:-20px;
+  left:24px;
+  width:350px;                     /* tamaño escritorio */
+  filter:drop-shadow(0 0 10px var(--trail));
+}
+
+/* quitar animación pulse del <img> */
+ .logo img{
+  width:100%;           /* ← esto hacía falta */
+  height:auto;
+  animation:none;
+}
+/* ---- ESTELA DE LUZ (ahora con núcleo-sol y brillo asimétrico) ---- */
+.light-trail{
+  position:fixed;
+  top:-400px;
+  left:50%;
+  width:600px;                 /* diámetro del “sol” */
+  height:600px;
+  transform:translateX(-50%);  /* mantener centrado */
+  filter:blur(60px);
+  pointer-events:none;
+  animation:rotateTrail 5s linear infinite;
+}
+
+/* núcleo celeste + penumbra */
+.light-trail{
+  background:radial-gradient(circle at center,
+              rgba(0,191,255,0.9) 0%,     /* centro intenso */
+              rgba(0,191,255,0.6) 30%,
+              rgba(0,191,255,0.25) 60%,
+              transparent 85%);
+}
+
+/* sector ovalado extra-brillante (gira junto al sol) */
+.light-trail::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 30% 50%, 
+              rgba(255,255,255,0.95) 0%,
+              rgba(255,255,255,0.5) 25%,
+              transparent 60%);
+  mix-blend-mode:screen;       /* fusión para resplandor */
+  border-radius:50%;
+}
+
+/* animación de giro */
+@keyframes rotateTrail{
+  from{transform:translateX(-50%) rotate(0deg);}
+  to{transform:translateX(-50%) rotate(360deg);}
+}
+/* ---- TÍTULO NEÓN ---- */
+h1{
+  font-family:'Orbitron',sans-serif;   /* nuevo look */
+  letter-spacing:2px;
+  background:linear-gradient(90deg,var(--trail),#5e9eff 60%,var(--trail));
+  -webkit-background-clip:text;
+  color:transparent;
+  text-shadow:0 0 15px rgba(94,158,255,.6);
+  width:80vmin;              /* diámetro toma el menor lado de la pantalla */
+  height:80vmin;
+  top:calc(-0.66 * 80vmin);  /* la subimos 2/3 de su alto */
+}
+/* ---------- BREAKPOINT PARA PANTALLAS GRANDES ---------- */
+/* ---------- LOGO MÓVIL ---------- */
+@media (max-width:800px), (orientation:portrait){
+  .logo{ width:250px; }     /* se reduce solo en pantallas pequeñas */
+}
+
+/* ---------- SOL RESPONSIVE ---------- */
+.light-trail{
+  width:80vmin;
+  height:80vmin;
+  top:calc(-0.66 * 80vmin);
+}
+
+
+ </style>
+</head>
+<body>
+<!-- NUEVO: estela luminosa -->
+<div class="light-trail"></div>
+
+<!-- LOGO (avatar) ahora envuelto en .logo -->
+<div class="logo">
+  <img src="Imagenes/El_Güiro_Tech.png" alt="Mascota de El Güiro Tech">
+</div>
+ <h1>y&nbsp;seguimos&nbsp;trabajando<br>en&nbsp;más&nbsp;diseño&nbsp;para&nbsp;ti</h1>
+
+</body>
+</html>

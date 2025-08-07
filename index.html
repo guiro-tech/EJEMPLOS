@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Güiro Tech | Creamos tu solución digital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET ===== */
+    *{margin:0;padding:0;box-sizing:border-box}
+
+    body{font-family:'Inter',sans-serif}
+
+    /* Bloqueo de scroll cuando menú está abierto */
+    body.noscroll{overflow:hidden}
+
+    /* ===== HEADER & NAV ===== */
+    header{
+      padding:20px 40px;
+      display:flex;justify-content:space-between;align-items:center;
+      position:relative;
+      z-index:25;    
+    }
+    .logo{font-weight:700;font-size:1.5rem}
+    nav a{margin-left:24px;font-weight:500;color:#000;text-decoration:none;transition:color .2s ease}
+    nav a:hover{color:#555}
+
+    /* Estado visual cuando el mega‑menú está abierto */
+    header.nav-blur nav a{color:#888}
+    header.nav-blur nav a#productos-btn{color:#000;font-weight:700}
+
+    /* ===== MEGA-MENÚ ===== */
+    .dropdown{
+      position:absolute;top:100%;left:0;width:100%;
+      background:#fff;padding:40px 100px 64px;
+      display:flex;flex-direction:column;gap:14px;
+	opacity:0;transform:translateY(-12px); 
+	visibility:hidden;pointer-events:none;
+	transition:opacity .25s ease,transform .25s ease;
+      box-shadow:0 2px 15px rgba(0,0,0,.08);
+      z-index:30;
+    }
+    .dropdown.show{
+	opacity:1;transform:translateY(0);   
+	visibility:visible;pointer-events:auto;
+	}
+	}
+    .dropdown a{font-size:1.25rem;color:#111;text-decoration:none}
+    .dropdown::after{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:16px;
+      background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,0));
+      pointer-events:none;
+    }
+
+    /* ===== CAPA DE BLUR ===== */
+    .page-blur{
+      position:fixed;inset:0;backdrop-filter:none;background:transparent;
+      opacity:0;pointer-events:none;transition:backdrop-filter .3s ease,opacity .3s ease;
+      z-index:10;
+    }
+    .page-blur.show{
+      backdrop-filter:blur(6px);background:rgba(255,255,255,.25);
+      opacity:1;pointer-events:auto;
+    }
+
+    /* ===== HERO ===== */
+    .hero{
+  position:relative;                 /* necesario para el fondo */
+  text-align:center;
+  padding:120px 5px;                /* alto similar al ejemplo */
+  border-radius:20px;                /* esquinas redondeadas */
+  overflow:hidden;                   /* recorta el pseudo-fondo */
+max-width:1300px;        /* límite en píxeles, cámbialo a tu gusto   */
+  margin:0 auto;           /* lo centra horizontalmente                */
+}
+    .hero h2{color:#fff;margin-bottom:20px;font-size:1.1rem}
+    .hero h1{color:#fff;font-size:3.5rem;font-weight:700;line-height:1.2;max-width:820px;margin:0 auto 34px}
+
+    /* ===== BOTONES HERO ===== */
+    .buttons{display:flex;justify-content:center;gap:22px;flex-wrap:wrap}
+    .buttons a{padding:15px 32px;font-size:1rem;border-radius:50px;border:2px solid #000;font-weight:600;text-decoration:none;transition:all .25s ease}
+    .btn-black{background:#000;color:#fff}
+    .btn-black:hover{background:#333}
+.btn-white,
+.btn-white:visited,
+.btn-white:focus{
+  background:#fff;
+  color:#000;
+  border-color:#fff;   /* borde se mimetiza */
+}
+
+.btn-white:hover{
+  background:#e5e5e5;  /* leve gris al pasar el cursor */
+  color:#000;
+  border-color:#e5e5e5;
+}
+    /* ===== RESPONSIVE (≤600px) ===== */
+    @media(max-width:600px){
+      .hero h1{font-size:2.1rem}
+      header{flex-direction:column;align-items:flex-start}
+      nav{margin-top:10px}
+      nav a{margin:6px 10px 0 0}
+      .dropdown{padding:30px 24px}
+      .dropdown a{font-size:1.1rem}
+    }
+a,
+a:visited,
+a:active,
+a:focus{
+  color:inherit;        /* hereda el color del texto circundante */
+  text-decoration:none; /* adiós subrayado y azul/púrpura default */
+  outline:none;         /* sin borde cuando recibe focus */
+}
+.btn-black,
+.btn-black:visited,
+.btn-black:focus{
+  color:#fff;
+}
+/* ===== FONDO GIF + CAPA OSCURA ===== */
+.hero::before,          /* GIF */
+.hero::after{           /* oscurecedor */
+  content:"";
+  position:absolute;inset:0;
+  z-index:-2;                             /* detrás del texto */
+}
+
+.hero::before{
+  background:url("Imagenes/2D_3D_.gif") center/cover no-repeat;
+}
+
+.hero::after{
+  background:rgba(0,0,0,.55);             /* oscurece el GIF */
+  z-index:-1;                             /* sobre el GIF, bajo el texto */
+}
+
+
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">El Güiro Tech</div>
+    <nav>
+      <a href="#" id="productos-btn">Productos ▾</a>
+      <a href="#">Inicio</a>
+      <a href="#">Servicios</a>
+      <a href="#">Portafolio</a>
+      <a href="#">Contacto</a>
+    </nav>
+    <!-- MEGA-MENÚ DENTRO DEL HEADER -->
+    <div id="dropdown-productos" class="dropdown">
+      <a href="#">Hardware</a>
+      <a href="#">Pagos</a>
+      <a href="#">Clientes</a>
+      <a href="#">Personal</a>
+      <a href="#">Banca</a>
+      <a href="#">Desarrollador</a>
+      <a href="#"><strong>Todos los productos</strong></a>
+    </div>
+  </header>
+
+  <!-- CAPA DE BLUR -->
+  <div id="page-blur" class="page-blur"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h2>Desarrollo a tu medida</h2>
+    <h1>Creamos sistemas y páginas&nbsp;web que se venden solas</h1>
+    <div class="buttons">
+      <a class="btn-white" href="https://wa.me/50250113244" target="_blank">Escríbenos</a>
+      <a class="btn-black" href="https://www.facebook.com/people/El-G%C3%BCiro-Tech/61556541214972/" target="_blank">Conoce&nbsp;más</a>    </div>
+  </section>
+
+  <script>
+    const btn       = document.getElementById('productos-btn');
+    const dropdown  = document.getElementById('dropdown-productos');
+    const blurLayer = document.getElementById('page-blur');
+    const header    = document.querySelector('header');
+
+    /* Mostrar menú (desktop hover) */
+    btn.addEventListener('mouseenter', showMenu);
+    header.addEventListener('mouseleave', hideMenu);
+
+    /* Click / tap para móviles */
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      toggleMenu();
+    });
+
+    /* Clic en capa blur = cerrar */
+    blurLayer.addEventListener('click', hideMenu);
+
+    function showMenu(){
+      dropdown.classList.add('show');
+      blurLayer.classList.add('show');
+      document.body.classList.add('noscroll');
+      header.classList.add('nav-blur');
+    }
+
+    function hideMenu(){
+      dropdown.classList.remove('show');
+      blurLayer.classList.remove('show');
+      document.body.classList.remove('noscroll');
+      header.classList.remove('nav-blur');
+    }
+
+    function toggleMenu(){
+      const visible = dropdown.classList.toggle('show');
+      blurLayer.classList.toggle('show', visible);
+      document.body.classList.toggle('noscroll', visible);
+      header.classList.toggle('nav-blur', visible);
+    }
+  </script>
+</body>
+</html>
+
