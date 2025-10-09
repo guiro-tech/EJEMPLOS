@@ -4,304 +4,585 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>El Güiro Tech | Slider Retro</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <!-- Fuentes -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
   <style>
-
     /* ===== RESET RÁPIDO ===== */
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5}
+    html{scroll-behavior:smooth}
+    :root{
+      --neon:#ff007c;
+      --ink:#0a0a0f;
+      --ink2:#151527;
+      --progress:#ff4db0;
+      --card-bg:#0e0e1a;
+      --card-bd:rgba(255,0,124,.45);
+      --text:#f6f6f6;
+      --muted:#cfd3da;
+      --maxw:1200px;
+    }
+    body{
+      font-family:'Orbitron', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:#f5f5f5;
+      color:#111;
+    }
+
+    /* ===== TOPBAR RETRO DARK ===== */
+    .topbar{
+      background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);
+      padding:0 50px;
+      border-bottom:3px solid var(--neon);
+      box-shadow:0 0 14px #ff007c80;
+      position:relative;
+      z-index:100;
+    }
+    .topbar-inner{
+      min-height:56px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:18px;flex-wrap:wrap;max-width:var(--maxw);margin:0 auto;
+    }
+    .brand{height:50px;width:auto;object-fit:contain;border-radius:8px}
+    .brand-text{
+      font-size:1.05rem;color:#fff;letter-spacing:1px;user-select:none;
+      text-shadow:0 0 6px var(--neon),0 0 12px var(--neon);
+    }
+
+    /* pill demo */
+    .demo-pill{
+      font-size:.8rem;color:#fff;
+      padding:6px 12px;border:2px solid var(--neon);border-radius:999px;
+      box-shadow:0 0 10px #ff007cb0 inset, 0 0 10px #ff007c70;
+      text-shadow:0 0 4px var(--neon);
+      white-space:nowrap;
+    }
+
+    /* navegación principal */
+    .main-nav{display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+    .nav-item{position:relative}
+    .main-nav a{
+      color:#f6f6f6;text-decoration:none;font-size:.9rem;
+      text-shadow:0 0 4px var(--neon);
+    }
+    .main-nav a:hover{opacity:.85}
+
+    /* mega menú (mejorado y centrado) */
+    .nav-item .mega{display:none}
+    .nav-item:hover .mega,
+    .nav-item:focus-within .mega,
+    .mega:hover,
+    .mega:focus-within{display:flex}
+    .mega{
+      background:#fff;position:absolute;top:100%;left:50%;
+      transform:translateX(-50%);
+      width:100vw;max-width:calc(var(--maxw) + 120px);
+      padding:28px 60px;display:flex;gap:60px;border-radius:0 0 16px 16px;
+      box-shadow:0 6px 22px rgba(0,0,0,.12);z-index:200
+    }
+    .mega-col h4{font-size:.85rem;margin-bottom:10px;color:#151527}
+    .mega-col a{display:block;margin-bottom:8px;font-size:.95rem;color:#333;text-decoration:none}
+    .mega-col a:hover{color:var(--neon)}
+
+    /* acciones topbar */
+    .topbar-actions{display:flex;align-items:center;gap:16px}
+    .icon{font-size:1.1rem;color:#f6f6f6;text-decoration:none;text-shadow:0 0 4px var(--neon)}
+    .icon:hover{opacity:.85}
+    .login-btn{
+      padding:6px 18px;border-radius:24px;background:var(--neon);color:#fff;text-decoration:none;
+      font-size:.8rem;box-shadow:0 0 8px #ff007c8f;transition:background .2s
+    }
+    .login-btn:hover{background:#ff0099}
+
+    /* ===== TICKER ===== */
+    .ticker{
+      background:linear-gradient(90deg,rgba(255,0,124,.25),transparent 30%, transparent 70%, rgba(255,0,124,.25));
+      border-top:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .ticker-inner{max-width:var(--maxw);margin:0 auto;overflow:hidden}
+    .ticker-track{
+      display:flex;gap:36px;align-items:center;white-space:nowrap;
+      padding:8px 0;color:#fff;
+      animation:ticker 22s linear infinite;
+      text-shadow:0 0 6px var(--neon);
+      font-size:.9rem;
+    }
+    .tick{opacity:.9}
+    @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
     /* ===== SLIDER HERO ===== */
     .slider{
-      position:relative;
-      max-width:1200px;          /* ancho máximo */
-      margin:40px auto;
-      border-radius:20px;
-      overflow:hidden;
+      position:relative;max-width:var(--maxw);margin:28px auto;border-radius:20px;overflow:hidden;
+      background:#000;
     }
-    /* --- Slides --- */
-     .slide{
-   position:relative;
-   width:100%;
-   height:clamp(260px,60vw,420px);
- }
+    .slides-track{display:flex;width:100%;height:100%;transition:transform .55s ease-in-out}
+    .slide{flex:0 0 100%;position:relative;height:clamp(260px,60vw,420px)}
+    .slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-2}
 
-
-    .slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-2;}
-
+    /* overlay de contenido */
     .slide-content{
-      position:absolute;left:80px;top:50%;transform:translateY(-50%);
-      color:#fff;max-width:45%;
+      position:absolute;left:64px;top:50%;transform:translateY(-50%);
+      color:#fff;max-width:48%;
     }
-    .slide-logo{width:170px;margin-bottom:18px}
-    .slide-content h2{font-size:3.2rem;line-height:1.1;margin-bottom:12px}
-    .subtitle{font-size:1.1rem;margin-bottom:28px}
+    .slide-logo{width:160px;margin-bottom:12px;border-radius:10px;box-shadow:0 0 12px #ff007c80}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .chip{
+      border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 10px;font-size:.78rem;
+      background:rgba(10,10,15,.45);backdrop-filter:blur(2px)
+    }
+    .slide-content h2{font-size:2.4rem;line-height:1.1;margin-bottom:10px;text-shadow:0 0 10px rgba(0,0,0,.6)}
+    .subtitle{font-size:1rem;margin-bottom:16px;color:#f3f3f3;text-shadow:0 0 8px rgba(0,0,0,.5)}
     .cta{
-      display:inline-block;padding:14px 46px;border-radius:30px;
-      background:#fff;color:#d00;font-weight:700;font-size:1.4rem;
-      text-decoration:none;transition:background .2s;
+      display:inline-block;padding:12px 28px;border-radius:30px;background:#fff;color:#d00;
+      font-weight:800;font-size:.95rem;text-decoration:none;transition:transform .2s, background .2s;
+      border:2px solid var(--neon); box-shadow:0 0 10px #ff007c60;
     }
-    .cta:hover{background:#eee}
+    .cta:hover{background:#eee;transform:translateY(-2px)}
 
-    /* --- Flechas --- */
+    /* Barra de progreso autoplay (por slide) */
+    .progress{position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--progress);box-shadow:0 0 10px #ff4db099}
+    .progress.animate{animation:fill linear forwards}
+    @keyframes fill{from{width:0}to{width:100%}}
+
+    /* Flechas */
     .nav{
       position:absolute;top:50%;transform:translateY(-50%);
-      width:50px;height:50px;border-radius:50%;border:none;
-      background:rgba(255,255,255,.8);color:#555;font-size:1.8rem;
-      cursor:pointer;transition:background .2s;
+      width:50px;height:50px;border-radius:50%;border:none;background:rgba(255,255,255,.8);color:#555;
+      font-size:1.8rem;cursor:pointer;transition:background .2s
     }
     .nav:hover{background:#fff}
     .nav.prev{left:30px}
     .nav.next{right:30px}
 
-    /* --- Puntos --- */
-    .dots{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
-    .dots button{
-      width:36px;height:6px;border:none;border-radius:3px;
-      background:#d3d3d3;cursor:pointer;opacity:.65;
-    }
+    /* Puntos */
+    .dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+    .dots button{width:36px;height:6px;border:none;border-radius:3px;background:#d3d3d3;cursor:pointer;opacity:.65}
     .dots button.active{background:#d00;opacity:1}
-/* ===== TOPBAR RETRO DARK ===== */
-.topbar{
-  background:linear-gradient(135deg,#0a0a0f 0%,#151527 100%); /* casi negro con violeta oscuro */
-  padding:0 50px;
-  border-bottom:3px solid #ff007c;      /* línea neón */
-  box-shadow:0 0 14px #ff007c80;        /* suave glow */
-  position:relative;        /* ⬅️ crea el contexto para el mega-menú */
-  z-index:50;               /* queda por encima del slider */
-}
-/* ——— TOPBAR ——— */
-.topbar-inner{
-  min-height:56px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;   /* ⬅️ separa logo vs navegación+acciones */
-}
 
-/* menú principal */
-.main-nav{display:flex;align-items:center;gap:28px}
-.nav-item{position:relative}
+    /* Nota demo debajo del slider */
+    .demo-note{
+      max-width:var(--maxw);margin:10px auto 0;padding:10px 16px;background:#0a0a0f;color:#eaeaea;
+      border:1px solid var(--neon);border-radius:12px;font-size:.8rem;letter-spacing:.3px;
+      box-shadow:0 0 10px #ff007c40
+    }
 
-/* oculto por defecto */
-.nav-item .mega{display:none}
+    /* ===== GRID DE PRODUCTOS ===== */
+    .products{
+      max-width:var(--maxw);margin:18px auto 40px;padding:0 10px;
+    }
+    .products-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .products-head h3{font-size:1.3rem;color:#0d0d0d;text-transform:uppercase;letter-spacing:1px}
+    .grid{
+      display:grid;gap:14px;
+      grid-template-columns:repeat(4,1fr);
+    }
+    .card-prod{
+      background:var(--card-bg);color:var(--text);
+      border:1px solid var(--card-bd);border-radius:14px;box-shadow:0 0 12px rgba(255,0,124,.15) inset;
+      overflow:hidden;display:flex;flex-direction:column;
+    }
+    .pimg{
+      aspect-ratio:4/3;background:linear-gradient(135deg,#24122a,#0e0e1a);
+      display:grid;place-items:center;font-size:2rem
+    }
+    .pbody{padding:12px}
+    .ptitle{font-weight:800;letter-spacing:.5px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin:8px 0 10px}
+    .price{font-weight:900;color:#ff78bc}
+    .badge{font-size:.7rem;border:1px solid #ff78bc;border-radius:999px;padding:2px 8px;opacity:.9}
+    .actions{display:flex;gap:8px}
+    .btn-neon{
+      flex:1;display:inline-flex;justify-content:center;align-items:center;gap:6px;
+      padding:8px 10px;border-radius:10px;border:1px solid #ff78bc;background:transparent;color:#fff;
+      text-decoration:none;font-weight:700;font-size:.8rem;box-shadow:0 0 10px rgba(255,0,124,.25) inset;
+      transition:transform .2s, background .2s
+    }
+    .btn-neon:hover{transform:translateY(-1px);background:rgba(255,0,124,.12)}
 
-/* visible cuando el mouse está sobre el link *o* sobre el panel */
-.nav-item:hover .mega{display:flex}
+    /* Toast DEMO */
+    .toast{
+      position:fixed;right:16px;bottom:16px;background:#0a0a0f;color:#fff;border:2px solid var(--neon);
+      border-radius:12px;padding:10px 14px;font-size:.85rem;
+      box-shadow:0 0 14px #ff007c70 inset, 0 0 10px #ff007c50;
+      opacity:0;transform:translateY(8px);transition:opacity .22s, transform .22s;
+      pointer-events:none;z-index:9999;max-width:min(92vw,420px)
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
 
-.main-nav a{
-  font-family:'Press Start 2P',monospace;
-  color:#f6f6f6;text-decoration:none;font-size:.8rem;
-  text-shadow:0 0 4px #ff007c;
-}
-.main-nav a:hover{opacity:.85}
+    /* ===== RESPONSIVE ===== */
+    @media (max-width:1024px){
+      .slide-content{left:40px;max-width:58%}
+      .slide-content h2{font-size:2rem}
+      .grid{grid-template-columns:repeat(3,1fr)}
+    }
+    @media (max-width:768px){
+      .topbar{padding:0 18px}
+      .brand{height:40px}
+      .brand-text{font-size:.95rem}
+      .main-nav{gap:18px}
+      .nav{width:40px;height:40px;font-size:1.4rem}
+      .nav.prev{left:12px}.nav.next{right:12px}
+      .dots button{width:24px;height:4px}
+      .slide-content{left:24px;max-width:72%}
+      .slide-content h2{font-size:1.6rem}
+      .mega{padding:22px 32px;gap:36px}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:560px){
+      .slide-content{position:static;max-width:100%;padding:18px 16px 2px;text-align:center;transform:none}
+      .slide-content h2{font-size:1.4rem;margin-bottom:8px}
+      .subtitle{font-size:.9rem;margin-bottom:14px}
+      .cta{font-size:.85rem;padding:10px 22px}
+      .dots{bottom:12px}
+      .dots button{width:18px}
+      .demo-pill{order:3}
+      .grid{grid-template-columns:1fr}
+    }
 
-/* contenedor de íconos + botón */
-.topbar-actions{display:flex;align-items:center;gap:24px}
-
-/* iconitos */
-.icon{
-  font-size:1.1rem;color:#f6f6f6;text-decoration:none;
-  text-shadow:0 0 4px #ff007c;
-}
-.icon:hover{opacity:.85}
-
-/* botón “Acceder” */
-.login-btn{
-  padding:6px 18px;border-radius:24px;
-  background:#ff007c;
-  color:#fff;text-decoration:none;
-  font-family:'Press Start 2P',monospace;font-size:.7rem;
-  box-shadow:0 0 8px #ff007c8f;
-  transition:background .2s;
-}
-.login-btn:hover{background:#ff0099}
-.brand{
-  height:50px;      /* ↓ antes 32 – 36 px; cámbialo si lo quieres aún menor */
-  width:auto;
-  object-fit:contain;
-
-}
-.brand-text{
-  font-family:'Press Start 2P',monospace;
-  font-size:1rem;
-  color:#fff;
-  text-shadow:
-    0 0 6px #ff007c,
-    0 0 12px #ff007c;
-  letter-spacing:1px;
-  user-select:none;
-}
-/* --- Pista que se desliza --- */
-.slides-track{
-  display:flex;                      /* los <article> uno junto al otro */
-  width:100%;
-  height:100%;
-  transition:transform .55s ease-in-out;
-}
-/* Ajusta los slides para ocupar todo el ancho */
-.slide{
-  flex:0 0 100%;                     /* cada uno = 100 % de la pista   */
-  position:relative;height:420px;
-}
-.mega{
-  background:white;
-  position:absolute;     /* sigue siendo absolute */
-  top:100%;              /* justo debajo de .topbar */ 
-  left:0;
-  width:100vw;           /* ocupa toda la ventana */
-  max-width:none;        /* por si el padre tuviera restricción */
-  padding:32px 80px;
-  display:flex;
-  gap:60px;
-  border-radius:0 0 16px 16px;
-  box-shadow:0 6px 22px rgba(0,0,0,.12);
-  z-index:200;
-}
-.mega.hidden{display:none;}
-
-.mega-col h4{
-  font-family:'Press Start 2P',monospace;
-  font-size:.75rem;
-  margin-bottom:14px;
-  color:#151527;
-}
-.mega-col a{
-  display:block;margin-bottom:10px;
-  font-size:.85rem;color:#333;text-decoration:none;
-}
-.mega-col a:hover{color:#ff007c}
-@media (max-width:768px){
-  /* topbar */
-  .topbar{padding:0 24px;}
-  .topbar-inner{flex-wrap:wrap;gap:16px;}
-  .brand{height:38px;}                /* logo un poco más chico */
-  .brand-text{font-size:.8rem;}
-
-  /* navegación horizontal pasa a dos filas si hace falta */
-  .main-nav{gap:18px;flex-wrap:wrap;}
-
-  /* flechas y puntos más compactos */
-  .nav{width:40px;height:40px;font-size:1.4rem}
-  .nav.prev{left:12px}.nav.next{right:12px}
-  .dots button{width:24px;height:4px}
-}
-
-@media (max-width:480px){
-  /* título y subtítulo del slide */
-  .slide-content{
-    position:static;                 /* deja de estar superpuesto */
-    max-width:100%;
-    padding:32px 16px;
-    text-align:center;
-    transform:none;
-  }
-  .slide-content h2{font-size:1.6rem;margin-bottom:10px}
-  .subtitle{font-size:.9rem;margin-bottom:20px}
-  .cta{font-size:1rem;padding:10px 26px}
-
-  /* puntos más pegados al borde */
-  .dots{bottom:14px}
-  .dots button{width:18px}
-}
- 
- </style>
+    /* reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .slides-track{transition:none}
+      .ticker-track{animation:none}
+      .progress.animate{animation:none}
+    }
+  </style>
 </head>
 <body>
+
 <header class="topbar">
   <div class="topbar-inner">
-    <!-- logo -->
-    <img src="Imagenes/Logo.jpeg" alt="El Güiro Tech" class="brand" />
-    <span class="brand-text">El Güiro Tech</span>
+    <!-- logo + marca -->
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="Imagenes/Logo.jpeg" alt="El Güiro Tech" class="brand" />
+      <span class="brand-text">El Güiro Tech</span>
+    </div>
+
+    <!-- pill demo -->
+    <span class="demo-pill">TEMPLATE&nbsp;DEMO&nbsp;—&nbsp;CLIENTES</span>
+
     <!-- navegación principal -->
     <nav class="main-nav">
-       <div class="nav-item">
-    <a href="#equipos">Equipos ▾</a>
-    <div class="mega" id="mega-equipos">
-      <div class="mega-col">
-        <h4>Equipos Computacionales</h4>
-        <a href="#">Laptop</a>
-        <a href="#">Escritorio</a>
-        <a href="#">Gabinete</a>
-        <a href="#">Computadoras ARM</a>
+      <!-- Mega “Equipos” (arreglado/centrado) -->
+      <div class="nav-item">
+        <a href="#equipos" aria-haspopup="true" aria-expanded="false">Equipos ▾</a>
+        <div class="mega" id="mega-equipos">
+          <div class="mega-col">
+            <h4>Computacionales</h4>
+            <a href="#" data-sim>Laptops</a>
+            <a href="#" data-sim>Escritorio</a>
+            <a href="#" data-sim>Gabinetes</a>
+            <a href="#" data-sim>ARM Box</a>
+          </div>
+          <div class="mega-col">
+            <h4>Periféricos</h4>
+            <a href="#" data-sim>Teclados</a>
+            <a href="#" data-sim>Mouses</a>
+            <a href="#" data-sim>Monitores</a>
+          </div>
+          <div class="mega-col">
+            <h4>Almacenamiento</h4>
+            <a href="#" data-sim>SSD</a>
+            <a href="#" data-sim>HDD</a>
+            <a href="#" data-sim>NAS</a>
+          </div>
+        </div>
       </div>
-      <div class="mega-col">
-        <h4>Equipos para el Hogar</h4>
-        <a href="#">Escobas</a>
-        <a href="#">Consolas</a>
-        <a href="#">Sofas</a>
+
+      <!-- Mega “Tecnologías” (nuevo) -->
+      <div class="nav-item">
+        <a href="#tec" aria-haspopup="true" aria-expanded="false">Tecnologías ▾</a>
+        <div class="mega" id="mega-tech">
+          <div class="mega-col">
+            <h4>Web</h4>
+            <a href="#" data-sim>Frontend</a>
+            <a href="#" data-sim>Backend</a>
+            <a href="#" data-sim>Full-Stack</a>
+          </div>
+          <div class="mega-col">
+            <h4>Embebidos</h4>
+            <a href="#" data-sim>ESP32</a>
+            <a href="#" data-sim>Raspberry Pi</a>
+            <a href="#" data-sim>STM32</a>
+          </div>
+          <div class="mega-col">
+            <h4>IA & Data</h4>
+            <a href="#" data-sim>Vision</a>
+            <a href="#" data-sim>RAG</a>
+            <a href="#" data-sim>Analytics</a>
+          </div>
+        </div>
       </div>
-      <div class="mega-col">
-        <h4>Inteligentes</h4>
-        <a href="#">Calculadoras</a>
-        <a href="#">IA</a>
-      </div>
-    </div>
-  </div>
-      <a href="#movil">Tecnologias ▾</a>
-      <a href="#hogar">Innovacion ▾</a>
-      <a href="#ofertas">Ofertas ▾</a>
+
+      <a href="#hogar"  data-sim>Innovación ▾</a>
+      <a href="#ofertas" data-sim>Ofertas ▾</a>
     </nav>
 
-
-    <!-- acciones (search, carrito, login) -->
+    <!-- acciones (simuladas) -->
     <div class="topbar-actions">
-      <a href="#buscar"  class="icon">🔍</a>
-      <a href="#carrito" class="icon">🛒</a>
-      <a href="#login"   class="login-btn">Acceder</a>
+      <a href="#buscar"  class="icon" data-sim>🔍</a>
+      <a href="#carrito" class="icon" data-sim>🛒</a>
+      <a href="#login"   class="login-btn" data-sim>Acceder</a>
     </div>
   </div>
 </header>
 
-  <!-- ===== SLIDER HERO ===== -->
-<section id="slider-hero" class="slider">
-  <div class="slides-track">
-    <article class="slide">
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-track" aria-hidden="true">
+      <span class="tick">/* DEMO: enlaces y botones simulados */</span><span class="tick">·</span>
+      <span class="tick">Personalizable: colores, tipografías, secciones</span><span class="tick">·</span>
+      <span class="tick">Responsive + mega-menú + slider</span><span class="tick">·</span>
+      <span class="tick">Integraciones reales bajo pedido</span><span class="tick">·</span>
+      <span class="tick">/* DEMO: enlaces y botones simulados */</span><span class="tick">·</span>
+      <span class="tick">Personalizable: colores, tipografías, secciones</span><span class="tick">·</span>
+      <span class="tick">Responsive + mega-menú + slider</span><span class="tick">·</span>
+      <span class="tick">Integraciones reales bajo pedido</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDER HERO ===== -->
+<section id="slider-hero" class="slider" tabindex="0" aria-label="Slider de portada">
+  <div class="slides-track" id="track">
+    <!-- Slide 1 con overlay informativo y CTA funcional -->
+    <article class="slide" aria-roledescription="slide" aria-label="Plantilla retro">
       <div class="slide-bg" style="background-image:url('Imagenes/2D_3D_.gif')"></div>
+      <div class="slide-content">
+        <img class="slide-logo" src="Imagenes/Logo.jpeg" alt="Logo El Güiro Tech" />
+        <div class="chips"><span class="chip">Neón</span><span class="chip">Mega-menú</span><span class="chip">Responsive</span></div>
+        <h2>Plantilla retro para tu tienda</h2>
+        <p class="subtitle">Template de muestra: mega-menú, slider y estilo neón listos para personalizar.</p>
+        <!-- CTA ahora funciona: baja a productos -->
+        <a href="#productos" class="cta">Explorar productos</a>
+      </div>
+      <div class="progress"></div>
     </article>
 
-    <article class="slide">
+    <!-- Slide 2 visual -->
+    <article class="slide" aria-roledescription="slide" aria-label="Mundo digital">
       <div class="slide-bg" style="background-image:url('Imagenes/world.gif')"></div>
+      <div class="progress"></div>
     </article>
-  </div>   <!-- ← cierre de .slides-track -->
 
-  <!-- Flechas (quedan fijas) -->
-  <button class="nav prev">‹</button>
-  <button class="nav next">›</button>
+    <!-- Slide 3 visual -->
+    <article class="slide" aria-roledescription="slide" aria-label="Estilo neón">
+      <div class="slide-bg" style="background-image:url('Imagenes/world.gif')"></div>
+      <div class="progress"></div>
+    </article>
+  </div>
+
+  <!-- Flechas -->
+  <button class="nav prev" aria-label="Anterior">‹</button>
+  <button class="nav next" aria-label="Siguiente">›</button>
 
   <!-- Puntos -->
-  <div class="dots"></div>
+  <div class="dots" aria-label="Indicadores"></div>
 </section>
 
+<!-- Nota sutil de demo -->
+<div class="demo-note">/* DEMO: algunos enlaces y botones están deshabilitados. El CTA del banner sí navega a “Productos”. */</div>
+
+<!-- ===== PRODUCTOS ===== -->
+<section id="productos" class="products" aria-label="Productos destacados">
+  <div class="products-head">
+    <h3>Productos destacados</h3>
+    <a href="#todos" class="main-nav" data-sim style="text-decoration:none;color:#ff007c">Ver todo →</a>
+  </div>
+  <div class="grid">
+    <article class="card-prod">
+      <div class="pimg">🖥️</div>
+      <div class="pbody">
+        <div class="ptitle">PC Gamer Neon</div>
+        <div class="meta"><span class="price">Q 7,999</span><span class="badge">Nuevo</span></div>
+        <div class="actions">
+          <a href="#det1" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add1" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+    <article class="card-prod">
+      <div class="pimg">💻</div>
+      <div class="pbody">
+        <div class="ptitle">Laptop Creator</div>
+        <div class="meta"><span class="price">Q 5,499</span><span class="badge">-15%</span></div>
+        <div class="actions">
+          <a href="#det2" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add2" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+    <article class="card-prod">
+      <div class="pimg">⌨️</div>
+      <div class="pbody">
+        <div class="ptitle">Teclado Mecánico</div>
+        <div class="meta"><span class="price">Q 599</span><span class="badge">Hot</span></div>
+        <div class="actions">
+          <a href="#det3" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add3" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+    <article class="card-prod">
+      <div class="pimg">🖱️</div>
+      <div class="pbody">
+        <div class="ptitle">Mouse Pro</div>
+        <div class="meta"><span class="price">Q 299</span><span class="badge">Oferta</span></div>
+        <div class="actions">
+          <a href="#det4" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add4" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+    <article class="card-prod">
+      <div class="pimg">📀</div>
+      <div class="pbody">
+        <div class="ptitle">SSD 1TB</div>
+        <div class="meta"><span class="price">Q 749</span><span class="badge">Rápido</span></div>
+        <div class="actions">
+          <a href="#det5" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add5" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+    <article class="card-prod">
+      <div class="pimg">🧠</div>
+      <div class="pbody">
+        <div class="ptitle">Kit IA Edge</div>
+        <div class="meta"><span class="price">Q 2,899</span><span class="badge">Dev</span></div>
+        <div class="actions">
+          <a href="#det6" class="btn-neon" data-sim>Ver detalle</a>
+          <a href="#add6" class="btn-neon" data-sim>Agregar</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- Toast DEMO -->
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">Demo: acción deshabilitada</div>
 
 <script>
-/* === Slider súper ligero === */
-const track   = document.querySelector('#slider-hero .slides-track');
+/* === Slider mejorado (autoplay + progreso + teclado + swipe) === */
+const track   = document.getElementById('track');
 const slides  = [...track.children];
 const dotsBox = document.querySelector('#slider-hero .dots');
 const prevBtn = document.querySelector('#slider-hero .prev');
 const nextBtn = document.querySelector('#slider-hero .next');
+const slider  = document.getElementById('slider-hero');
 
 let idx = 0;
+let timer = null;
+let playing = true;
+const INTERVAL = 5000; // ms
 
 /* Crear puntos */
 slides.forEach((_, i)=>{
   const b = document.createElement('button');
+  b.setAttribute('aria-label', `Ir al slide ${i+1}`);
   if(i===0) b.classList.add('active');
-  b.onclick = ()=>goTo(i);
+  b.onclick = ()=>goTo(i, true);
   dotsBox.appendChild(b);
 });
 
 /* Flechas */
-prevBtn.onclick = ()=>goTo(idx - 1);
-nextBtn.onclick = ()=>goTo(idx + 1);
+prevBtn.onclick = ()=>goTo(idx - 1, true);
+nextBtn.onclick = ()=>goTo(idx + 1, true);
 
-function goTo(n){
+/* Progreso por slide */
+function setProgressAnimating(on){
+  slides.forEach(s=>{
+    const bar = s.querySelector('.progress');
+    if(!bar) return;
+    bar.classList.remove('animate');
+    bar.style.animationDuration = INTERVAL + 'ms';
+    if(on && s === slides[idx]) {
+      // reflow para reiniciar
+      void bar.offsetWidth;
+      bar.classList.add('animate');
+    }
+  });
+}
+
+function goTo(n, manual=false){
   dotsBox.children[idx].classList.remove('active');
-  idx = (n + slides.length) % slides.length;   // ciclo infinito
+  idx = (n + slides.length) % slides.length;
   dotsBox.children[idx].classList.add('active');
   track.style.transform = `translateX(-${idx * 100}%)`;
+  setProgressAnimating(true);
+  if (manual) restartAutoplay();
 }
-</script>
 
+function startAutoplay(){
+  stopAutoplay();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!playing) return;
+  setProgressAnimating(true);
+  timer = setTimeout(()=>{ goTo(idx + 1, false); startAutoplay(); }, INTERVAL);
+}
+function stopAutoplay(){
+  clearTimeout(timer); timer = null;
+  setProgressAnimating(false);
+}
+function restartAutoplay(){ stopAutoplay(); startAutoplay(); }
+
+/* Pausar en hover / focus dentro del slider */
+slider.addEventListener('mouseenter', ()=>{ playing=false; stopAutoplay(); });
+slider.addEventListener('mouseleave', ()=>{ playing=true; startAutoplay(); });
+slider.addEventListener('focusin',   ()=>{ playing=false; stopAutoplay(); });
+slider.addEventListener('focusout',  ()=>{ playing=true; startAutoplay(); });
+
+/* Teclado */
+slider.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowLeft') { goTo(idx - 1, true); }
+  if(e.key === 'ArrowRight'){ goTo(idx + 1, true); }
+});
+
+/* Swipe (touch/pointer) */
+let startX = 0, currentX = 0, dragging = false;
+const THRESH = 45; // px
+slider.addEventListener('pointerdown', (e)=>{
+  dragging = true; startX = e.clientX; currentX = startX;
+  slider.setPointerCapture(e.pointerId);
+  stopAutoplay();
+});
+slider.addEventListener('pointermove', (e)=>{
+  if(!dragging) return;
+  currentX = e.clientX;
+  const dx = currentX - startX;
+  track.style.transition = 'none';
+  track.style.transform = `translateX(calc(${-idx*100}% + ${dx}px))`;
+});
+slider.addEventListener('pointerup', (e)=>{
+  if(!dragging) return;
+  const dx = currentX - startX;
+  dragging = false;
+  track.style.transition = '';
+  if(Math.abs(dx) > THRESH){
+    if(dx<0) goTo(idx+1,true); else goTo(idx-1,true);
+  }else{
+    goTo(idx,true); // snap back
+  }
+  startAutoplay();
+});
+
+/* Iniciar */
+startAutoplay();
+
+/* === Demo: acciones simuladas === */
+const toast = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg){
+  toast.textContent = msg || 'Demo: acción deshabilitada';
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), 1700);
+}
+document.querySelectorAll('[data-sim]').forEach(el=>{
+  el.addEventListener('click', e=>{
+    e.preventDefault();
+    showToast('Demo: acción deshabilitada');
+  });
+});
+</script>
 </body>
 </html>

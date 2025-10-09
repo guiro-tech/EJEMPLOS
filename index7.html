@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>El Güiro Tech — Template Infantil</title>
+  <meta name="description" content="Landing page infantil, lista para personalizar (colores, logo, textos)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#FDF6FF; --bg2:#FFF9E9; --primary:#FF7AA2; --secondary:#7AC7FF; --accent:#FFD166; --mint:#7AF2C2; --grape:#B794F4;
+      --ink:#0f172a; --muted:#475569; --card:#ffffff; --ring: 0 10px 30px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+    html{scroll-behavior:smooth}
+    a{color:inherit}
+    .container{max-width:1120px;margin:0 auto;padding:0 20px}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:14px;padding:14px 20px;border:0;background:var(--primary);color:#fff;font-weight:700;text-decoration:none;box-shadow:var(--ring);transition:.2s;cursor:pointer}
+    .btn:hover{transform:translateY(-1px);filter:saturate(1.1)}
+    .btn--outline{background:#fff;color:var(--ink);border:2px solid #e2e8f0}
+    .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:999px;border:2px solid var(--secondary);background:#fff;color:#2563eb;font-weight:700;box-shadow:var(--ring);font-size:.9rem}
+    .grid{display:grid;gap:24px}
+    .card{background:var(--card);border-radius:22px;box-shadow:var(--ring)}
+    .card-body{padding:22px}
+    .title{font-weight:800}
+    .muted{color:var(--muted)}
+    .hero{position:relative;overflow:hidden}
+    .blob{position:absolute;filter:blur(40px);opacity:.28;border-radius:9999px}
+    .blob.one{width:320px;height:320px;left:-60px;top:-60px;background:var(--secondary)}
+    .blob.two{width:380px;height:380px;right:-80px;top:40px;background:var(--accent)}
+    .blob.three{width:260px;height:260px;left:60px;bottom:-60px;background:var(--mint)}
+    .hero-wrap{padding:90px 0}
+    .hero h1{font-size:clamp(36px,6vw,58px);line-height:1.05;margin:14px 0}
+    .hero p{font-size:clamp(16px,2.2vw,18px)}
+    .stack-md{display:grid;grid-template-columns:1fr;gap:36px}
+    @media(min-width:900px){.stack-md{grid-template-columns:1.1fr .9fr}}
+
+    .mock-illustration{aspect-ratio:1/1;border-radius:28px;background:#ffffffbd;backdrop-filter:blur(6px);box-shadow:var(--ring);display:flex;align-items:center;justify-content:center;padding:28px}
+    .face{width:190px;height:190px;border-radius:50%;background:linear-gradient(180deg,#fff,#fef3f8);position:relative;box-shadow:inset 0 8px 30px rgba(0,0,0,.05)}
+    .eye{width:22px;height:22px;background:#0f172a;border-radius:50%;position:absolute;top:38%;animation:blink 5s infinite}
+    .eye.left{left:28%}.eye.right{right:28%}
+    .smile{position:absolute;bottom:28%;left:50%;transform:translateX(-50%);width:90px;height:50px;border:6px solid #0f172a;border-top:none;border-left:none;border-right:none;border-radius:0 0 90px 90px}
+    @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.15)}}
+    .float{animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    .section{padding:80px 0;scroll-margin-top:90px}
+    .section.white{background:#fff}
+
+    .cards-3{display:grid;gap:20px}
+    @media(min-width:800px){.cards-3{grid-template-columns:repeat(3,1fr)}}
+
+    .gallery{display:grid;gap:20px}
+    @media(min-width:700px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1000px){.gallery{grid-template-columns:repeat(3,1fr)}}
+    .thumb{aspect-ratio:4/3;border-radius:18px;background:linear-gradient(135deg,#ffe4ec,#fff3b0);display:flex;align-items:center;justify-content:center}
+
+    .footer .form{display:grid;gap:12px}
+    .input{border:2px solid #e2e8f0;border-radius:14px;padding:14px;font:inherit}
+    .credits{font-size:12px;color:var(--muted);text-align:center;margin-top:28px}
+
+    /* anclas */
+    nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,0,0,.05)}
+    nav .nav-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;text-decoration:none}
+    .brand-bubble{width:34px;height:34px;border-radius:50%;background:var(--secondary);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:var(--ring)}
+    .links{display:flex;gap:14px}
+    .links a{font-weight:700;text-decoration:none;color:#0f172a;opacity:.8}
+    .links a:hover{opacity:1}
+    .brand-logo{height:36px;width:auto;border-radius:8px;box-shadow:var(--ring);object-fit:cover}
+
+    /* Toast de demo (ligero, acorde al tema) */
+    .toast{
+      position:fixed;right:20px;bottom:20px;z-index:60;
+      background:#fff;border:2px solid #e2e8f0;color:#0f172a;
+      padding:12px 14px;border-radius:12px;box-shadow:var(--ring);
+      opacity:0;transform:translateY(8px);pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+      display:flex;align-items:center;gap:10px;
+      font-weight:600;
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .toast .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(180deg,var(--secondary),#60a5fa);
+      box-shadow:0 0 12px rgba(96,165,250,.6);
+    }
+  </style>
+  <link rel="icon" href="Imagenes/Logo.jpeg" />
+</head>
+<body>
+  <!-- NAV -->
+  <nav>
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="Ir al inicio">
+        <img class="brand-logo" src="Imagenes/Logo.jpeg" alt="Logo de El Güiro Tech" loading="lazy"/>
+        <span>El Güiro Tech</span>
+      </a>
+      <div class="links" role="navigation" aria-label="Secciones">
+        <a href="#features">Características</a>
+        <a href="#galeria">Galería</a>
+        <!-- Se quitó el enlace a Precios y el botón Cotizar -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <a id="top"></a>
+  <header class="hero">
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="blob three"></div>
+    <div class="container hero-wrap stack-md">
+      <div>
+        <span class="badge">✨ Webs juguetonas para negocios con onda</span>
+        <h1>
+          Tu sitio infantil <span style="color:var(--primary)">bonito y ágil</span><br/>
+          <span>y súper fácil de usar</span>
+        </h1>
+        <p class="muted">Template listo para personalizar: colores, logo, personajes y secciones. Ideal para guarderías, piñaterías, juguetes, heladerías y academias.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:16px">
+          <button class="btn" onclick="document.querySelector('#galeria').scrollIntoView({behavior:'smooth'})">Ver demo</button>
+          <!-- Se quitó el botón "Pedir cotización" -->
+        </div>
+        <div class="muted" style="display:flex;gap:18px;margin-top:14px;font-size:14px">
+          <span>🪄 Marca propia</span>
+          <span>🎨 Paleta a tu gusto</span>
+          <span>📘 CMS opcional</span>
+        </div>
+      </div>
+      <div>
+        <div class="mock-illustration">
+          <div class="face float" role="img" aria-label="Carita sonriente animada">
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+            <span class="smile"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section id="features" class="section">
+    <div class="container">
+      <div style="text-align:center;max-width:760px;margin:0 auto">
+        <h2 class="title" style="font-size:clamp(28px,4vw,40px)">¿Qué trae el template?</h2>
+        <p class="muted">Base moderna y rápida para lanzar tu sitio en días, no semanas.</p>
+      </div>
+      <div class="cards-3" style="margin-top:28px">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="title" style="display:flex;align-items:center;gap:10px"><span style="background:var(--mint);color:#065f46;padding:8px;border-radius:12px">🎨</span> Colores y tipografías</h3>
+            <p class="muted">Paletas dulces, fuentes redondeadas y formas orgánicas para un look tierno y profesional.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h3 class="title" style="display:flex;align-items:center;gap:10px"><span style="background:var(--accent);color:#92400e;padding:8px;border-radius:12px">✨</span> Animaciones suaves</h3>
+            <p class="muted">Transiciones y microinteracciones que dan vida sin marear, pensadas para móviles.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h3 class="title" style="display:flex;align-items:center;gap:10px"><span style="background:var(--secondary);color:#0c4a6e;padding:8px;border-radius:12px">📘</span> Secciones flexibles</h3>
+            <p class="muted">Hero, servicios, galería, precios, testimonios y contacto — quita o agrega según tu negocio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section id="galeria" class="section white">
+    <div class="container">
+      <div style="display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <div>
+          <h3 class="title" style="font-size:clamp(24px,4vw,34px)">Galería juguetona</h3>
+          <p class="muted">Ejemplo de tarjetas para productos, eventos o aulas.</p>
+        </div>
+        <button class="btn" style="background:var(--mint);color:#065f46" onclick="showToast('Demo: acción deshabilitada')">Ver más</button>
+      </div>
+      <div class="gallery" style="margin-top:20px">
+        <!-- Thumbs -->
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 1">✨</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #1</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 2">⭐</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #2</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 3">🧸</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #3</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 4">🍦</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #4</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 5">🎈</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #5</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb" aria-label="Ilustración 6">🚀</div>
+          <div class="card-body">
+            <div class="title">Tarjeta #6</div>
+            <p class="muted">Texto breve de ejemplo para explicar el ítem.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="section white">
+    <div class="container">
+      <h3 class="title" style="text-align:center;font-size:clamp(24px,4vw,34px)">Lo que dicen</h3>
+      <div class="cards-3" style="margin-top:20px">
+        <div class="card"><div class="card-body"><p class="muted">“Una web rápida y linda.”</p><div class="muted" style="font-size:14px;margin-top:10px">— Cliente feliz #1</div></div></div>
+        <div class="card"><div class="card-body"><p class="muted">“Subimos ventas a la semana.”</p><div class="muted" style="font-size:14px;margin-top:10px">— Cliente feliz #2</div></div></div>
+        <div class="card"><div class="card-body"><p class="muted">“Se entiende todo fácil.”</p><div class="muted" style="font-size:14px;margin-top:10px">— Cliente feliz #3</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <footer id="contacto" class="section footer">
+    <div class="container grid" style="grid-template-columns:1fr;gap:28px">
+      <div class="grid" style="grid-template-columns:1fr;gap:28px">
+        <div>
+          <h4 class="title" style="font-size:clamp(22px,3vw,28px)">¿Te gustó el estilo?</h4>
+          <p class="muted">Escríbenos y adaptamos el template a tu marca: colores, ilustraciones y contenidos.</p>
+          <div style="display:flex;gap:12px;margin-top:10px">
+            <!-- Botones de contacto simulados -->
+            <button type="button" class="btn" data-sim="email">✉️ Contáctanos</button>
+            <button type="button" class="btn btn--outline" data-sim="call">📞 Llamar</button>
+          </div>
+          <div class="muted" style="display:flex;gap:10px;margin-top:12px">📘 Facebook · 📷 Instagram</div>
+        </div>
+        <div class="card" style="background:#ffffffcc;backdrop-filter:blur(4px)">
+          <div class="card-body">
+            <form class="form" onsubmit="event.preventDefault(); showToast('Demo: envío deshabilitado');">
+              <label>
+                <span class="sr-only">Tu nombre</span>
+                <input class="input" placeholder="Tu nombre" required>
+              </label>
+              <label>
+                <span class="sr-only">Email o WhatsApp</span>
+                <input class="input" placeholder="Email o WhatsApp" required>
+              </label>
+              <label>
+                <span class="sr-only">Cuéntanos tu idea</span>
+                <textarea class="input" rows="4" placeholder="Cuéntanos tu idea"></textarea>
+              </label>
+              <button class="btn" type="submit">Enviar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="credits">© <span id="y"></span> Demo infantil — Hecho con cariño · El Güiro Tech.</div>
+    </div>
+  </footer>
+
+  <!-- Toast DEMO -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="toastMsg">Demo: acción deshabilitada</span>
+  </div>
+
+  <script>
+    // Año footer
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Scroll con compensación de navbar sticky
+    (function(){
+      const nav = document.querySelector('nav');
+      const navH = () => (nav ? nav.getBoundingClientRect().height : 0);
+
+      function scrollToHash(hash){
+        const el = document.querySelector(hash);
+        if(!el) return;
+        const y = el.getBoundingClientRect().top + window.pageYOffset - navH() - 8;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+
+      // Click en enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const h = a.getAttribute('href');
+          if(h && h.length > 1){
+            e.preventDefault();
+            scrollToHash(h);
+            history.pushState(null,'',h);
+          }
+        });
+      });
+
+      // Si llega con hash ya puesto
+      if(location.hash){
+        setTimeout(()=>scrollToHash(location.hash), 0);
+      }
+    })();
+
+    // Toast helper
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toastMsg');
+      if(!t || !m) return;
+      m.textContent = msg || 'Demo: acción deshabilitada';
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+    }
+
+    // Botones simulados (email/call)
+    document.querySelectorAll('[data-sim]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const kind = btn.dataset.sim;
+        if(kind === 'email') showToast('Demo: contacto deshabilitado');
+        else if(kind === 'call') showToast('Demo: llamada deshabilitada');
+        else showToast('Demo: acción deshabilitada');
+      });
+    });
+  </script>
+</body>
+</html>

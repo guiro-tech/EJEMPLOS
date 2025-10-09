@@ -21,51 +21,41 @@
       --radius:32px;
       --max-width:1400px;
     }
-/* ===== LIGHT TRAIL BACKGROUND ===== */
-body{
-  position:relative;
-  overflow:hidden;
-  background:#000;
-  color:var(--accent);
-  isolation:isolate;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
 
-body::after{
-  /* 1️⃣ – LO QUE FALTABA */
-  content:"";            /* crea la capa */
-  position:fixed;        /* saca la luz del flujo del documento */
-  pointer-events:none;   /* que no bloquee clicks */
+    /* ===== LIGHT TRAIL BACKGROUND ===== */
+    body{
+      position:relative;
+      overflow:hidden;
+      background:#000;
+      color:var(--accent);
+      isolation:isolate;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      pointer-events:none;
+      left:50%;
+      bottom:0;
+      width:110vw;
+      height:110vh;
+      transform: translate(-50%,500px);
+      background:radial-gradient(ellipse at center,
+         rgba(255,255,255,.85) 0%,
+         rgba(255,255,255,.40) 25%,
+         rgba(255,255,255,.12) 60%,
+         transparent 78%);
+      filter:blur(80px);
+      animation:lightPulse 6s ease-in-out infinite;
+      z-index:-1;
+    }
+    @keyframes lightPulse{
+      0%{opacity:.5}20%{opacity:1}80%{opacity:1}100%{opacity:.5}
+    }
 
-  /* 2️⃣ – POSICIÓN / TAMAÑO */
-  left:50%;
-  bottom:0;                    /* se ancla justo al borde inferior */
-
-  /* tamaño más compacto—solo lo necesario para el brillo */
-  width:110vw;
-  height:110vh;
-  transform: translate(-50%,500px);
-
-  /* halo más fuerte (más alfa) y menos difuso */
-  background:radial-gradient(ellipse at center,
-     rgba(255,255,255,.85) 0%,   /* +fuerza */
-     rgba(255,255,255,.40) 25%,
-     rgba(255,255,255,.12) 60%,
-     transparent 78%);
-  filter:blur(80px);           /* menos blur → más definido */
-
-  /* solo parpadeo suave; ya no sube */
-  animation:lightPulse 6s ease-in-out infinite;
- }
-
-@keyframes lightPulse{
-  0%   {opacity:.5;}
-  20%  {opacity:1;}
-  80%  {opacity:1;}
-  100% {opacity:.5;}
- }
     /* ===== NAV ===== */
     header{
       width:100%;
@@ -84,10 +74,8 @@ body::after{
       font-weight:600;
     }
     .brand img{
-      width:24px;height:24px;
-      border-radius:6px;
+      width:24px;height:24px;border-radius:6px;
     }
-
     nav ul{
       list-style:none;
       display:flex;
@@ -109,9 +97,10 @@ body::after{
       font-weight:600;
       border:none;
       cursor:pointer;
-      transition:background .2s;
+      transition:background .2s, transform .2s;
+      color:#fff;
     }
-    .cta-top:hover{background:#333}
+    .cta-top:hover{background:#303030; transform:translateY(-1px)}
 
     /* ===== HERO ===== */
     .hero{
@@ -121,19 +110,33 @@ body::after{
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding:0 20px;
+      padding:0 20px 20px;
+      gap:18px;
+      max-width:var(--max-width);
+      margin:0 auto;
+    }
+    .pill{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+      font-size:.85rem;
+      font-weight:700;
+      letter-spacing:.2px;
     }
     .hero h1{
+      font-family:'Playfair Display',serif;
       font-size:clamp(2rem,6vw,4rem);
       line-height:1.15;
-      margin-bottom:24px;
       max-width:900px;
       font-weight:600;
+      letter-spacing:.2px;
     }
     .hero p{
       font-size:1rem;
-      margin-bottom:40px;
       opacity:.85;
+      max-width:760px;
     }
     .cta-main{
       padding:18px 48px;
@@ -144,23 +147,70 @@ body::after{
       border:none;
       border-radius:var(--radius);
       cursor:pointer;
-      transition:transform .2s;
+      transition:transform .2s, box-shadow .2s;
+      box-shadow:0 10px 30px rgba(255,255,255,.08);
     }
-    .cta-main:hover{transform:translateY(-2px)}
+    .cta-main:hover{transform:translateY(-2px); box-shadow:0 14px 40px rgba(255,255,255,.12)}
+
+    /* ===== INFO BAND (nuevo, sutil) ===== */
+    .info{
+      width:100%;
+      max-width:var(--max-width);
+      margin:10px auto 0;
+      padding:0 40px 10px;
+    }
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    @media(min-width:900px){
+      .info-grid{grid-template-columns:repeat(3,1fr)}
+    }
+    .info-card{
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:24px;
+      background:rgba(255,255,255,.04);
+      padding:18px 18px;
+    }
+    .info-card h3{
+      font-family:'Playfair Display',serif;
+      font-size:1.15rem;
+      margin-bottom:8px;
+      font-weight:600;
+    }
+    .list{
+      list-style:none;
+      display:grid;
+      gap:6px;
+      font-size:.95rem;
+      opacity:.9;
+    }
+    .list li{
+      position:relative;
+      padding-left:18px;
+    }
+    .list li::before{
+      content:"";
+      position:absolute;left:0;top:.55em;
+      width:6px;height:6px;border-radius:50%;
+      background:#fff;
+      opacity:.75;
+    }
 
     /* ===== MOCKUP LAPTOP (decorativo) ===== */
     .mockup{
       width:80%;
       max-width:900px;
       height:250px;
-      margin:120px auto 60px;
+      margin:90px auto 60px;
       border:4px solid var(--accent);
       border-radius:30px;
       position:relative;
       overflow:hidden;
     }
     .mockup::before{
-      content:"Con elegancia";
+      content:"Template para clientes (DEMO)";
       position:absolute;
       inset:0;
       display:flex;
@@ -169,25 +219,43 @@ body::after{
       background:#0008;
       font-size:1.25rem;
       font-weight:600;
+      font-family:'Playfair Display',serif;
+      letter-spacing:.2px;
+    }
+
+    /* ===== TOAST DEMO ===== */
+    .toast{
+      position:fixed;right:20px;bottom:20px;z-index:50;
+      background:#fff;color:#000;
+      padding:12px 16px;border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      opacity:0;transform:translateY(8px);
+      transition:opacity .22s ease, transform .22s ease;
+      pointer-events:none;
+      display:flex;align-items:center;gap:10px;
+      font-weight:700;
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .toast .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:radial-gradient(circle, #000 0%, #444 60%, transparent 80%);
+      box-shadow:0 0 10px rgba(255,255,255,.6);
     }
 
     /* ===== RESPONSIVE ===== */
     @media(max-width:768px){
       header{padding:20px}
-      nav ul{display:none} /* menú hamburguesa opcional */
+      nav ul{display:none}
       .cta-top{display:none}
+      .mockup{margin:70px auto 40px;height:220px}
+      .info{padding:0 20px 10px}
     }
-/* ===== LIGHT TRAIL BACKGROUND ===== */
-
-
-
   </style>
 </head>
 <body>
   <!-- ========= NAVIGATION ========= -->
   <header>
     <div class="brand">
-      <!-- Logo local siguiendo tu convención -->
       <img src="Imagenes/Logo.jpeg" alt="El Güiro Tech" />
       <span>El Güiro Tech</span>
     </div>
@@ -201,17 +269,77 @@ body::after{
       </ul>
     </nav>
 
-    <button class="cta-top">COMENZAR</button>
+    <!-- Botón simulado -->
+    <button class="cta-top" type="button" data-sim="start">COMENZAR</button>
   </header>
 
   <!-- ========= HERO ========= -->
   <section class="hero">
+    <span class="pill">Template de muestra para clientes · DEMO</span>
     <h1>Inicia tu proyecto de un sitio web ahora</h1>
-    <p>El Güiro Tech te lo hace realidad.</p>
-    <button class="cta-main">COMENZAR</button>
+    <p>El Güiro Tech te lo hace realidad. Este archivo es un **template** listo para personalizar (colores, tipografías y secciones). Los botones están deshabilitados porque es demo.</p>
+    <!-- Botón simulado -->
+    <button class="cta-main" type="button" data-sim="start">COMENZAR</button>
+  </section>
+
+  <!-- ========= INFO BAND (nuevo, sin romper estética) ========= -->
+  <section class="info" aria-label="Información del template para clientes">
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>¿Qué incluye?</h3>
+        <ul class="list">
+          <li>Landing de ejemplo con hero, CTA y mockup.</li>
+          <li>Fondo luminoso (light trail) y tipografía elegante.</li>
+          <li>Estructura semántica y estilos responsivos.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Personalización</h3>
+        <ul class="list">
+          <li>Colores, tipografías y textos a tu marca.</li>
+          <li>Secciones extra: servicios, galería, contacto.</li>
+          <li>Integraciones: formulario real, WhatsApp, analytics.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Notas de demo</h3>
+        <ul class="list">
+          <li>Botones “COMENZAR” son simulados.</li>
+          <li>Contenido y enlaces son ilustrativos.</li>
+          <li>Entrega real se ajusta a tus necesidades.</li>
+        </ul>
+      </div>
+    </div>
   </section>
 
   <!-- ========= DECORATIVE MOCKUP ========= -->
-  <div class="mockup"></div>
+  <div class="mockup" aria-hidden="true"></div>
+
+  <!-- ===== Toast DEMO ===== -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="toastMsg">Demo: acción deshabilitada</span>
+  </div>
+
+  <script>
+    // Toast helper
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toastMsg');
+      if(!t || !m) return;
+      m.textContent = msg || 'Demo: acción deshabilitada';
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+    }
+
+    // Botones simulados (COMENZAR)
+    document.querySelectorAll('[data-sim="start"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        showToast('Demo: acción deshabilitada');
+      });
+    });
+  </script>
 </body>
 </html>

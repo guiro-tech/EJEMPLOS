@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Inicio | El Güiro Tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Fuente retro -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -16,14 +17,20 @@
       --logo-size:64px;
       --gap:14px;
       --hud-height:calc(var(--logo-size) + 2*var(--gap));
+      --green:#00FF00;
+      --bg:#000;
+      --max-w:1100px;
+      --card-gap:18px;
     }
 
     /* BASE ---------------------------------------------------------- */
+    html,body{height:100%}
     body{
-      background:#000;
-      color:#00FF00;
+      background:var(--bg);
+      color:var(--green);
       font-family:'Courier New', Courier, monospace;
-      overflow:hidden;
+      overflow-x:hidden;
+      overflow-y:auto;
     }
 
     /* LOGO ---------------------------------------------------------- */
@@ -39,39 +46,73 @@
       position:fixed;
       top:calc(var(--gap) + 8px);
       left:calc(var(--logo-size) + 2*var(--gap) + 12px);
-      display:flex;gap:42px;align-items:center;
-      padding:6px 28px;
-      border:2px solid #00FF00;
+      display:flex;gap:32px;align-items:center;
+      padding:6px 20px;
+      border:2px solid var(--green);
       background:rgba(0,0,0,.5);
       box-shadow:0 0 12px #00FF0080 inset;
       font-family:'Press Start 2P', monospace;
-      z-index:900;
+      z-index:1002;
+      max-width:calc(100vw - (var(--logo-size) + 5*var(--gap)));
+      overflow:auto hidden; scrollbar-width:none;
     }
+    .nav-bar::-webkit-scrollbar{display:none}
     .nav-bar a{
-      color:#00FF00;text-decoration:none;font-size:.8rem;position:relative;
+      color:var(--green);text-decoration:none;font-size:.8rem;position:relative;white-space:nowrap;
     }
-    .nav-bar a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:2px;background:#00FF00;transition:width .25s}
+    .nav-bar a::after{content:"";position:absolute;left:0;bottom:-3px;width:0;height:2px;background:var(--green);transition:width .25s}
     .nav-bar a:hover::after{width:100%}
 
-    /* TÍTULO -------------------------------------------------------- */
+    /* Botón menú (mobile) ------------------------------------------ */
+    .menu-btn{
+      display:none;
+      border:2px solid var(--green); background:#001900;
+      color:var(--green); padding:6px 10px; border-radius:8px; cursor:pointer;
+      font-family:'Press Start 2P', monospace; font-size:.75rem;
+    }
+    @media (max-width:760px){
+      .menu-btn{ display:inline-block }
+      .nav-bar{ gap:12px; padding-right:12px }
+      .nav-bar a{ display:none }              /* ocultos por defecto */
+      .nav-bar.open a{ display:inline }       /* visibles al abrir */
+      .nav-bar.open{ flex-wrap:wrap; gap:16px }
+    }
+
+    /* BADGE DEMO (HUD) --------------------------------------------- */
+    .badge-demo{
+      position:fixed;top:calc(var(--gap) + 8px);right:var(--gap);
+      padding:8px 14px;border:2px solid var(--green);
+      background:rgba(0,0,0,.6);
+      font-family:'Press Start 2P', monospace;font-size:.68rem;letter-spacing:.5px;
+      text-shadow:0 0 6px var(--green);
+      box-shadow:0 0 12px #00FF0080 inset;
+      z-index:1001;
+      pointer-events:none;
+    }
+
+    /* TÍTULO (hero) ------------------------------------------------- */
     .titulo{
       position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
       font-family:'Press Start 2P', monospace;
-      font-size:4rem;text-align:center;
-      text-shadow:0 0 4px #00FF00,0 0 14px #00FF00;
+      font-size:clamp(1.8rem,6vw,4rem);
+      text-align:center;
+      text-shadow:0 0 4px var(--green),0 0 14px var(--green);
       animation:pulse 2.5s infinite;
-      transition:opacity .5s ease;
+      transition:opacity .4s ease;
+      z-index:600;
+      pointer-events:none;
     }
+    .titulo.dim{ opacity:.25 }
     @keyframes pulse{
-      0%,100%{text-shadow:0 0 4px #00FF00,0 0 14px #00FF00}
-      50%    {text-shadow:0 0 10px #00FF00,0 0 24px #00FF00}
+      0%,100%{text-shadow:0 0 4px var(--green),0 0 14px var(--green)}
+      50%    {text-shadow:0 0 10px var(--green),0 0 24px var(--green)}
     }
 
     /* GLITCH -------------------------------------------------------- */
     .glitch{
       position:fixed;top:var(--hud-height);left:0;right:0;bottom:0;
-      background:repeating-linear-gradient(0deg,#00FF00,#00FF00 2px,#000 2px,#000 4px);
-      display:none;z-index:850;
+      background:repeating-linear-gradient(0deg,var(--green),var(--green) 2px,#000 2px,#000 4px);
+      display:none;z-index:1100;
       animation:glitchScreen .4s ease-out forwards;
     }
     @keyframes glitchScreen{
@@ -85,15 +126,125 @@
     .terminal{
       position:fixed;
       top:calc(var(--hud-height) + 24px);left:var(--gap);
-      font-size:1.6rem;white-space:pre;  /* <– white-space:pre conserva saltos */
-      display:none;z-index:900;
+      font-size:clamp(1rem,2.6vw,1.6rem);
+      white-space:pre;
+      display:none;z-index:1020;
+      text-shadow:0 0 6px rgba(0,255,0,.6);
+      max-width:calc(100vw - 2*var(--gap));
     }
     .terminal.active{display:block}
-    .cursor{
-      display:inline-block;width:1ch;height:1em;background:#00FF00;margin-left:2px;
-      animation:blink .7s step-end infinite;
-    }
+    .cursor{display:inline-block;width:1ch;height:1em;background:var(--green);margin-left:2px;animation:blink .7s step-end infinite;}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+    /* STATUS BAR ---------------------------------------------------- */
+    .status{
+      position:fixed;left:0;right:0;bottom:0;
+      display:flex;justify-content:center;align-items:center;
+      padding:8px 12px;border-top:2px solid var(--green);
+      background:rgba(0,0,0,.7);
+      font-family:'Press Start 2P', monospace;
+      font-size:.65rem;letter-spacing:.4px;
+      text-shadow:0 0 6px var(--green);
+      z-index:950;
+    }
+
+    /* TOAST DEMO ---------------------------------------------------- */
+    .toast{
+      position:fixed;right:16px;bottom:58px;
+      background:#001900;border:2px solid var(--green);
+      color:var(--green);padding:10px 14px;border-radius:10px;
+      font-family:'Press Start 2P', monospace;font-size:.68rem;
+      box-shadow:0 0 14px #00FF0070 inset, 0 0 10px #00FF0030;
+      opacity:0;transform:translateY(8px);
+      transition:opacity .22s ease, transform .22s ease;
+      pointer-events:none;z-index:960;
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+    /* CONTENIDO POR SECCIONES -------------------------------------- */
+    .content{
+      max-width:var(--max-w);
+      margin:calc(var(--hud-height) + 220px) auto 90px;
+      padding:0 16px;
+      position:relative; z-index:910;
+      display:none;
+      animation:reveal .35s ease-out;
+    }
+    .content.show{ display:block }
+    @keyframes reveal{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+    .section{ margin-top:30px; position:relative }
+    .section h2{
+      font-family:'Press Start 2P', monospace;
+      font-size:clamp(1rem,2.4vw,1.4rem);
+      margin-bottom:16px;
+      text-shadow:0 0 6px var(--green);
+    }
+
+    .panel{ display:none; opacity:0; transform:translateY(6px) scale(.995) }
+    .panel.active{ display:block; animation:scan .45s ease-out forwards }
+    @keyframes scan{
+      0%{opacity:0;transform:translateY(6px) scale(.995)}
+      100%{opacity:1;transform:translateY(0) scale(1)}
+    }
+    /* REMOVIDO: línea de escaneo sobre los títulos */
+
+    /* GRID & CARDS -------------------------------------------------- */
+    .grid{
+      display:grid; gap:var(--card-gap);
+      grid-template-columns:repeat(3,1fr);
+    }
+    @media (max-width:1024px){ .grid{ grid-template-columns:repeat(2,1fr) } }
+    @media (max-width:640px){  .grid{ grid-template-columns:1fr } }
+
+    .card{
+      border:2px solid var(--green);
+      background:rgba(0,0,0,.25);
+      padding:16px;border-radius:10px;
+      box-shadow:0 0 14px #00FF0040 inset, 0 0 10px #00FF0020;
+      transition:transform .15s ease, box-shadow .15s ease;
+      min-height:140px;
+    }
+    .card:hover{ transform:translateY(-3px); box-shadow:0 0 18px #00FF0080 inset, 0 0 12px #00FF0040 }
+    .card h3{ font-family:'Press Start 2P', monospace; font-size:.9rem; margin-bottom:10px }
+    .card p{ font-size:.95rem; line-height:1.35 }
+
+    .ph{
+      display:flex; align-items:center; justify-content:center;
+      height:140px; border:2px dashed var(--green);
+      border-radius:10px; background:rgba(0,0,0,.2);
+      box-shadow:0 0 14px #00FF0030 inset;
+      font-size:.9rem; text-align:center; padding:12px;
+    }
+
+    .steps{ counter-reset:paso }
+    .step{ position:relative; padding-left:60px; margin-bottom:16px; border-left:2px solid var(--green); padding-bottom:8px }
+    .step::before{
+      counter-increment:paso; content:counter(paso);
+      position:absolute; left:-16px; top:-6px;
+      width:36px; height:36px; border-radius:50%;
+      display:grid; place-items:center;
+      background:#001900; border:2px solid var(--green);
+      box-shadow:0 0 10px #00FF0060 inset;
+      font-family:'Press Start 2P', monospace; font-size:.8rem;
+    }
+
+    .cta-row{ display:flex; gap:14px; flex-wrap:wrap }
+    .btn{
+      border:2px solid var(--green); background:#001900;
+      padding:10px 14px; border-radius:10px; cursor:pointer;
+      font-family:'Press Start 2P', monospace; font-size:.8rem;
+      box-shadow:0 0 12px #00FF0040 inset;
+      transition:transform .12s ease, box-shadow .12s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform:translateY(-2px); box-shadow:0 0 16px #00FF0080 inset }
+    .btn[aria-disabled="true"]{ opacity:.9 }
+
+    /* Ajuste extra en pantallas pequeñas */
+    @media (max-width:640px){
+      .content{ margin:calc(var(--hud-height) + 300px) auto 80px; }
+    }
   </style>
 </head>
 
@@ -102,74 +253,201 @@
   <!-- HUD ---------------------------------------------------------- -->
   <img src="Imagenes/Logo.jpeg" alt="El Güiro Tech" class="logo">
 
-  <nav class="nav-bar" id="navBar">
-    <a href="#" data-key="principal">:echo&nbsp;Principal</a>
+  <nav class="nav-bar" id="navBar" aria-label="Navegación principal">
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navBar">MENU ▾</button>
+    <a href="#" data-key="portafolio">:echo&nbsp;Portafolio</a>
     <a href="#" data-key="acerca">:echo&nbsp;Acerca_de</a>
     <a href="#" data-key="servicios">:echo&nbsp;Servicios</a>
+    <a href="#" data-key="contacto">:echo&nbsp;Contacto</a>
   </nav>
 
+  <!-- Badge de Demo / Template -->
+  <div class="badge-demo">TEMPLATE&nbsp;DEMO&nbsp;—&nbsp;CLIENTES</div>
+
+  <!-- HERO fijo al centro -->
   <h1 class="titulo" id="titulo">EL&nbsp;GÜIRO&nbsp;TECH</h1>
 
   <!-- GLITCH & TERMINAL ------------------------------------------- -->
   <div class="glitch" id="glitch"></div>
 
-  <div class="terminal" id="terminal">
+  <div class="terminal" id="terminal" aria-live="polite">
     <span id="texto"></span><span class="cursor"></span>
   </div>
-<script>
-/* Texto que se pega para cada opción — ¡todos terminan con punto! */
-const infoBloques = {
-  principal: `\nBienvenido al sistema principal.\nAquí verás tu panel y métricas clave.\n> listo.`,
-  acerca:    `\nSomos El Güiro Tech.\nApasionados por la electrónica y el software hechos en Guatemala desde 2025.`,
-  servicios: `\n• Desarrollo web\n• Automatización\n• Diseño de circuitos\n• Consultoría técnica\n¡Contáctanos!.`
-};
 
+  <!-- Status bar inferior -->
+  <div class="status">/* DEMO: Navegación por secciones con efecto hacker. */</div>
+
+  <!-- CONTENIDO (solo se muestra la sección seleccionada) ---------- -->
+  <main class="content" id="content">
+    <!-- PANEL PORTAFOLIO -->
+    <section class="section panel" id="panel-portafolio">
+      <h2>Portafolio</h2>
+      <div class="grid">
+        <div class="ph">Proyecto 1 — Imagen/Vídeo demo</div>
+        <div class="ph">Proyecto 2 — Imagen/Vídeo demo</div>
+        <div class="ph">Proyecto 3 — Imagen/Vídeo demo</div>
+      </div>
+    </section>
+
+    <!-- PANEL ACERCA -->
+    <section class="section panel" id="panel-acerca">
+      <h2>Acerca de</h2>
+      <div class="grid">
+        <article class="card"><h3>Quiénes somos</h3><p>El Güiro Tech: desarrollo web, automatizaciones y sistemas a la medida.</p></article>
+        <article class="card"><h3>Valores</h3><p>Claridad, velocidad y soporte real. Sin paja, sin dejarte botado.</p></article>
+        <article class="card"><h3>Enfoque</h3><p>Soluciones prácticas, performance y UX que sí vende.</p></article>
+      </div>
+    </section>
+
+    <!-- PANEL SERVICIOS -->
+    <section class="section panel" id="panel-servicios">
+      <h2>Servicios</h2>
+      <div class="grid">
+        <article class="card"><h3>Sitios Web</h3><p>Landing/Institucional con SEO básico y diseño a tu marca.</p></article>
+        <article class="card"><h3>E-commerce</h3><p>Catálogo, carrito, checkout e integraciones de pago.</p></article>
+        <article class="card"><h3>Panel Admin</h3><p>Dashboards, roles, reportes y exportaciones.</p></article>
+        <article class="card"><h3>Automatización</h3><p>Bots, scrapers y CRON para quitarte chamba repetitiva.</p></article>
+        <article class="card"><h3>Integraciones</h3><p>WhatsApp, correo, biométricos, BD y nube.</p></article>
+        <article class="card"><h3>Soporte</h3><p>Monitoreo, backups y SLA según tu operación.</p></article>
+      </div>
+    </section>
+
+    <!-- PANEL CONTACTO -->
+    <section class="section panel" id="panel-contacto">
+      <h2>Contacto</h2>
+      <p>¿Te late este estilo? Armemos tu web.</p>
+      <div class="cta-row">
+        <button class="btn" data-demo="whatsapp" aria-disabled="true">WhatsApp (Demo)</button>
+        <button class="btn" data-demo="correo" aria-disabled="true">Correo (Demo)</button>
+        <button class="btn" data-demo="llamada" aria-disabled="true">Llamada (Demo)</button>
+      </div>
+      <p style="margin-top:10px; font-size:.9rem">*Botones deshabilitados en este template de demostración.</p>
+    </section>
+  </main>
+
+  <!-- Toast retro -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">Demo: navegación simulada</div>
+
+<script>
+/* ------------------- CONFIG Y STATE ------------------- */
 const navBar   = document.getElementById('navBar');
+const menuBtn  = document.getElementById('menuBtn');
 const titulo   = document.getElementById('titulo');
 const glitch   = document.getElementById('glitch');
 const terminal = document.getElementById('terminal');
 const texto    = document.getElementById('texto');
+const toastEl  = document.getElementById('toast');
+const content  = document.getElementById('content');
 
+let typing = false;
+let toastTimer = null;
+
+/* ------------------- Helpers ------------------- */
+function showToast(msg){
+  if(!toastEl) return;
+  toastEl.textContent = msg || 'Demo: navegación simulada';
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 1600);
+}
+
+function clearArea(){
+  // Limpia terminal y oculta contenido previo
+  texto.textContent = '';
+  // Oculta todas las secciones
+  document.querySelectorAll('.panel').forEach(p=>{ p.classList.remove('active'); p.style.display='none'; });
+}
+
+/* ------------------- Menú móvil ------------------- */
+menuBtn.addEventListener('click', ()=>{
+  const open = navBar.classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', String(open));
+});
+
+/* ------------------- NAVEGACIÓN :echo ------------------- */
 navBar.addEventListener('click', e => {
-  if (e.target.tagName !== 'A') return;
+  const link = e.target.closest('a[data-key]');
+  if (!link) return;
   e.preventDefault();
+  if (typing) return;
 
-  const key     = e.target.dataset.key;                         // principal | acerca | servicios
-  const palabra = e.target.innerText.trim().toLowerCase();      // texto de la opción
-  const bloque  = infoBloques[key];                             // párrafo completo
+  const key = link.dataset.key; // portafolio | acerca | servicios | contacto
 
-  /* se difumina solo el título */
-  titulo.style.opacity = '0';
+  // cierra menú móvil si estaba abierto
+  if(navBar.classList.contains('open')){
+    navBar.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
 
-  /* glitch bajo el HUD */
+  // 0) limpiar el área (tal como pediste)
+  clearArea();
+
+  // 1) glitch
   glitch.style.display = 'block';
+  setTimeout(() => { glitch.style.display = 'none'; }, 400);
 
-  setTimeout(() => {
-    glitch.style.display  = 'none';
-    titulo.style.display  = 'none';
-    terminal.classList.add('active');
+  // 2) atenuar el hero (se queda en medio)
+  titulo.classList.add('dim');
 
-    /* Fase 1: escribir la palabra completa */
-    texto.textContent = '';
-    let i = 0;
-    const typeWord = setInterval(() => {
-      if (i < palabra.length) {
-        texto.textContent += palabra[i++];
-      } else {
-        clearInterval(typeWord);
+  // 3) activar terminal y tipear SOLO la palabra
+  terminal.classList.add('active');
+  const palabra = link.innerText.replace(/:echo\s*/i,'').trim(); // ej. Portafolio
+  typing = true;
+  let i = 0;
+  const typeWord = setInterval(() => {
+    if (i < palabra.length) {
+      texto.textContent += palabra[i++];
+    } else {
+      clearInterval(typeWord);
+      typing = false;
 
-        /* Fase 2: pegar el párrafo SIN su último carácter */
-        const bodyWithoutLast = '\n' + bloque.slice(0, -1);
-        const lastChar        = bloque.slice(-1);  // normalmente '.'
-        texto.textContent    += bodyWithoutLast;
+      // 4) mostrar SOLO la sección correspondiente
+      showSection(key);
 
-        /* Fase 3: tras un pequeño delay, 'teclear' el último carácter */
-        setTimeout(() => {
-          texto.textContent += lastChar;
-        }, 2000);   // ← ajuste del retardo en ms
-      }
-    }, 200);       // velocidad de tipeo por carácter
-  }, 500);         // dura igual que la animación glitch
+      // 5) hacer visible el contenedor si no estaba
+      content.classList.add('show');
+
+      // 6) limpiar terminal y ocultarlo para dejar todo nítido
+      setTimeout(()=>{
+        texto.textContent = '';
+        terminal.classList.remove('active');
+      }, 250);
+
+      // 7) toast
+      showToast(`:echo ${palabra} (DEMO)`);
+    }
+  }, 110);
+});
+
+/* ------------------- MOSTRAR SECCIÓN ------------------- */
+function showSection(key){
+  const map = {
+    portafolio: '#panel-portafolio',
+    acerca:     '#panel-acerca',
+    servicios:  '#panel-servicios',
+    contacto:   '#panel-contacto'
+  };
+  const sel = map[key] || '#panel-portafolio';
+  const target = document.querySelector(sel);
+  if(!target) return;
+  target.style.display='block';
+  void target.offsetWidth; // reflow para reiniciar anim
+  target.classList.add('active');
+  // opcional scroll
+  // target.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ------------------- BOTONES DEMO ------------------- */
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-demo]');
+  if(!btn) return;
+  const tipo = btn.getAttribute('data-demo');
+  const mensajes = {
+    whatsapp: 'Demo: abriría WhatsApp con tu número/plantilla.',
+    correo:   'Demo: abriría cliente de correo con asunto y cuerpo.',
+    llamada:  'Demo: iniciaría una llamada al número configurado.'
+  };
+  showToast(mensajes[tipo] || 'Demo: acción simulada.');
 });
 </script>
 </body>

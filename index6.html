@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>El Güiro Tech — Plantilla Científica (una interacción)</title>
+  <!--
+    Plantilla lista para reutilizar en tus proyectos.
+    ► Diseño: limpio, "científico" (rejillas, tipografía técnica, acentos cian), accesible.
+    ► Interacción única: botón “Iniciar simulación” que genera una señal y la grafica.
+    ► Cómo reutilizar: cambia textos dentro de <main> y el logo SVG. Mantén los estilos base.
+  -->
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --panel: #0f1720;
+      --ink: #e5f2ff;
+      --muted: #94a3b8;
+      --accent: #22d3ee;
+      --accent-2: #60a5fa;
+      --grid: rgba(148,163,184,.15);
+      --ok: #34d399; --warn: #f59e0b; --err: #f87171;
+      --radius: 18px; --shadow: 0 10px 30px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--ink); background:var(--bg); line-height:1.45;
+      /* fondo científico con rejilla polar + cartesiana */
+      background-image:
+        radial-gradient(circle at 50% 50%, rgba(34,211,238,.06), transparent 60%),
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-position: center center, center top, left center;
+    }
+    header{
+      max-width:1100px; margin:32px auto 0; padding:0 20px 12px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid rgba(226,232,240,.08);
+    }
+    .brand{display:flex; gap:12px; align-items:center} .logo{width:40px;height:40px} .brand h1{margin:0;font-size:1.35rem;letter-spacing:.6px} .brand small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+    /* Animaciones del logo */
+    .logo-img{border-radius:12px; filter: drop-shadow(0 8px 18px rgba(34,211,238,.22)); animation: float 6s ease-in-out infinite alternate, glow 2.8s ease-in-out infinite alternate;}
+    .logo-img:hover{transform: translateY(-2px) scale(1.02); filter: drop-shadow(0 16px 26px rgba(96,165,250,.35));}
+    @keyframes float{from{transform: translateY(0)} to{transform: translateY(-6px)}}
+    @keyframes glow{from{box-shadow: 0 0 0px rgba(34,211,238,.0)} to{box-shadow: 0 0 22px rgba(34,211,238,.25)}}
+    .logo{width:40px;height:40px}
+    .brand h1{margin:0;font-size:1.35rem;letter-spacing:.6px}
+    .brand small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+
+    .cta{
+      display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+      background:linear-gradient(135deg, rgba(34,211,238,.16), rgba(96,165,250,.12));
+      border:1px solid rgba(148,163,184,.25);
+      padding:10px 14px; border-radius:12px; color:var(--ink);
+      transition:transform .12s ease, background .2s ease, border-color .2s ease;
+      text-decoration:none;
+    }
+    .cta:hover{ transform: translateY(-1px); border-color: rgba(34,211,238,.45); }
+
+    main{max-width:1100px;margin:28px auto;padding:0 20px 64px}
+
+    .hero{
+      display:grid; grid-template-columns: 1.25fr .75fr; gap:18px; align-items:stretch;
+    }
+    @media (max-width: 880px){ .hero{ grid-template-columns: 1fr; } }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      border:1px solid rgba(148,163,184,.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position:relative; overflow:hidden;
+    }
+    .panel::after{
+      content:""; position:absolute; inset:-2px; pointer-events:none;
+      background: radial-gradient(600px 220px at 20% -10%, rgba(34,211,238,.15), transparent 40%),
+                  radial-gradient(600px 220px at 120% 120%, rgba(96,165,250,.12), transparent 40%);
+      mix-blend-mode:screen; opacity:.9;
+    }
+
+    .p-hero{ padding:24px; display:flex; flex-direction:column; justify-content:center }
+    .kicker{ color:var(--accent); font-size:.9rem; letter-spacing:.12em; text-transform:uppercase }
+    h2{ font-size:2rem; margin:.4rem 0 1rem }
+    .lead{ color:var(--muted); max-width:70ch }
+
+    .badges{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px }
+    .badge{ font-size:.78rem; color:var(--ink); border:1px solid rgba(148,163,184,.25); padding:6px 10px; border-radius:999px; background:rgba(2,6,23,.35) }
+
+    .svg-pane{ position:relative; overflow:hidden }
+    .molecule{
+      position:absolute; inset:0; opacity:.8;
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,.35));
+    }
+
+    .grid{ margin-top:24px; display:grid; grid-template-columns: repeat(3, 1fr); gap:14px }
+    @media (max-width: 880px){ .grid{ grid-template-columns: 1fr; } }
+    .card{ padding:18px 18px 16px }
+    .card h3{ margin:.1rem 0 .35rem; font-size:1rem; letter-spacing:.25px }
+    .meta{ display:flex; gap:8px; align-items:center; color:var(--muted); font-size:.82rem }
+
+    /* Panel de simulación (única interacción) */
+    .sim{
+      margin-top:22px; padding:18px; display:grid; gap:14px;
+    }
+    .toolbar{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+    .btn{
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#03141c; font-weight:700; border:none; cursor:pointer; border-radius:12px;
+      padding:10px 14px; letter-spacing:.2px; box-shadow: 0 10px 25px rgba(34,211,238,.18);
+      transition: transform .08s ease, filter .2s ease;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99) }
+    .status{ color:var(--muted); font-size:.9rem }
+    .status b{ color:var(--ink) }
+    canvas{ width:100%; height:260px; background:rgba(2,6,23,.35); border-radius:12px; border:1px solid rgba(148,163,184,.18) }
+
+    footer{ max-width:1100px; margin:24px auto 40px; padding:0 20px; color:var(--muted); font-size:.9rem }
+    footer a{ color:var(--accent) }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <!-- Logo átomo / orbitales -->
+      <img class="logo logo-img" src="Imagenes/Logo.jpeg" alt="El Güiro Tech" decoding="async" />
+      <div>
+        <h1>El Güiro Tech</h1>
+        <small>Diseño y desarrollo web con enfoque científico y performance real</small>
+      </div>
+    </div>
+    <a class="cta" href="#simulacion" title="Ir a la simulación">Ver simulación
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <article class="panel p-hero">
+        <span class="kicker">Tu web, con método</span>
+        <h2>Lanzá tu sitio con estándares técnicos altos y una estética científica</h2>
+        <p class="lead">En El Güiro Tech construimos páginas que cargan rápido, se posicionan bien y se miran elegantes. Arquitectura limpia, métricas Core Web Vitals, SEO técnico, y componentes UI pulidos. Vos traés la idea, nosotros la volvemos producto.</p>
+        <div class="badges">
+          <span class="badge">HTML + CSS + JS puros</span>
+          <span class="badge">Accesible</span>
+          <span class="badge">Responsive</span>
+          <span class="badge">1 interacción</span>
+        </div>
+        <div class="grid">
+          <div class="panel card">
+            <div class="meta">Valor <span style="width:6px;height:6px;border-radius:999px;background:var(--ok);"></span></div>
+            <h3>Velocidad & Core Web Vitals</h3>
+            <p class="lead" style="font-size:.95rem">Implementamos optimización de rendimiento (código minimal, imágenes modernas, lazy‑load) para mejores puntajes y conversiones.</p>
+          </div>
+          <div class="panel card">
+            <div class="meta">Proceso <span style="width:6px;height:6px;border-radius:999px;background:var(--warn);"></span></div>
+            <h3>Metodología clara</h3>
+            <p class="lead" style="font-size:.95rem">Brief → wireframe → UI → desarrollo → pruebas → deploy. Sin enredos, con entregables verificables en cada etapa.</p>
+          </div>
+          <div class="panel card">
+            <div class="meta">Confianza <span style="width:6px;height:6px;border-radius:999px;background:var(--accent);"></span></div>
+            <h3>Soporte y escalabilidad</h3>
+            <p class="lead" style="font-size:.95rem">Mantenimientos, analítica y crecimiento por módulos. Tu sitio listo para integrar pagos, catálogos y más.</p>
+          </div>
+        </div>
+            <h3>Relación señal‑ruido</h3>
+            <p class="lead" style="font-size:.95rem">Se evalúa la atenuación exponencial en una señal seno con ruido blanco agregado (σ ≈ 0.12).</p>
+          </div>
+          <div class="panel card">
+            <div class="meta">Método <span style="width:6px;height:6px;border-radius:999px;background:var(--warn);"></span></div>
+            <h3>Modelo</h3>
+            <p class="lead" style="font-size:.95rem">x(t)=A·e^{-δt}·sin(2π f t + φ) + n(t). Muestreo uniforme, render con <code>&lt;canvas&gt;</code>.</p>
+          </div>
+          <div class="panel card">
+            <div class="meta">Resultado <span style="width:6px;height:6px;border-radius:999px;background:var(--accent);"></span></div>
+            <h3>Visual</h3>
+            <p class="lead" style="font-size:.95rem">Gráfica con ejes, rejilla y trazo suavizado; útil como bloque demostrativo en tus plantillas.</p>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel svg-pane" aria-hidden="true">
+        <!-- Molécula/retícula decorativa -->
+        <svg class="molecule" viewBox="0 0 600 540">
+          <defs>
+            <linearGradient id="mol" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#22d3ee"/>
+              <stop offset="1" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+          <g opacity="0.85" stroke="url(#mol)" fill="none">
+            <!-- red de nodos -->
+            <g>
+              <!-- columnas -->
+              <path d="M60 40 V500" opacity=".25"/>
+              <path d="M140 40 V500" opacity=".25"/>
+              <path d="M220 40 V500" opacity=".25"/>
+              <path d="M300 40 V500" opacity=".25"/>
+              <path d="M380 40 V500" opacity=".25"/>
+              <path d="M460 40 V500" opacity=".25"/>
+              <path d="M540 40 V500" opacity=".25"/>
+              <!-- filas -->
+              <path d="M40 80 H560" opacity=".25"/>
+              <path d="M40 160 H560" opacity=".25"/>
+              <path d="M40 240 H560" opacity=".25"/>
+              <path d="M40 320 H560" opacity=".25"/>
+              <path d="M40 400 H560" opacity=".25"/>
+              <path d="M40 480 H560" opacity=".25"/>
+            </g>
+            <!-- cadenas \"moleculares\" -->
+            <polyline points="60,120 140,220 220,160 300,260 380,200 460,300 540,240" stroke-width="2"/>
+            <polyline points="60,360 140,300 220,380 300,320 380,380 460,340 540,420" stroke-width="2" opacity=".7"/>
+            <!-- nodos -->
+            <g>
+              <circle cx="60" cy="120" r="6" fill="#22d3ee"/>
+              <circle cx="140" cy="220" r="6" fill="#60a5fa"/>
+              <circle cx="220" cy="160" r="6" fill="#22d3ee"/>
+              <circle cx="300" cy="260" r="6" fill="#60a5fa"/>
+              <circle cx="380" cy="200" r="6" fill="#22d3ee"/>
+              <circle cx="460" cy="300" r="6" fill="#60a5fa"/>
+              <circle cx="540" cy="240" r="6" fill="#22d3ee"/>
+            </g>
+          </g>
+        </svg>
+      </aside>
+    </section>
+
+    <!-- Simulación: única interacción -->
+    <section id="simulacion" class="panel sim" aria-labelledby="sim-title">
+      <div class="toolbar">
+        <div>
+          <h3 id="sim-title" style="margin:.2rem 0 .2rem">Simulación de señal amortiguada</h3>
+          <p class="status" id="status">Estado: <b>lista</b></p>
+        </div>
+        <button class="btn" id="runBtn" aria-controls="plot" aria-pressed="false">Iniciar simulación</button>
+      </div>
+      <canvas id="plot" height="260" aria-label="Gráfica de la señal"></canvas>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="y"></span> El Güiro Tech — Creamos sitios rápidos, bonitos y listos para vender.
+  </footer>
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+
+  <script>
+    // ———————————————— Utilidades de dibujo ————————————————
+    const $ = (sel) => document.querySelector(sel);
+    const canvas = $('#plot');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas(){
+      // Mantener nítido en pantallas HiDPI
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // Normaliza coords
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => { resizeCanvas(); drawFrame(lastData) });
+
+    const PAD = {l: 40, r: 12, t: 14, b: 28};
+
+    function drawAxes(){
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      ctx.clearRect(0,0,w,h);
+      // Fondo sutil
+      ctx.fillStyle = 'rgba(2,6,23,.35)';
+      ctx.fillRect(0,0,w,h);
+      // Rejilla
+      ctx.strokeStyle = 'rgba(148,163,184,.18)';
+      ctx.lineWidth = 1;
+      const gx = 10, gy = 6; // divisiones
+      for(let i=0;i<=gx;i++){
+        const x = PAD.l + (w-PAD.l-PAD.r)*i/gx;
+        ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, h-PAD.b); ctx.stroke();
+      }
+      for(let j=0;j<=gy;j++){
+        const y = PAD.t + (h-PAD.t-PAD.b)*j/gy;
+        ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(w-PAD.r, y); ctx.stroke();
+      }
+      // Ejes
+      ctx.strokeStyle = 'rgba(96,165,250,.9)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(PAD.l, h-PAD.b); ctx.lineTo(w-PAD.r, h-PAD.b); // X
+      ctx.moveTo(PAD.l, h-PAD.b); ctx.lineTo(PAD.l, PAD.t);      // Y
+      ctx.stroke();
+    }
+
+    function mapX(i, N){
+      const w = canvas.clientWidth;
+      return PAD.l + (w-PAD.l-PAD.r) * (i/(N-1));
+    }
+    function mapY(v, vmin, vmax){
+      const h = canvas.clientHeight;
+      const y = PAD.t + (h-PAD.t-PAD.b) * (1 - (v - vmin) / (vmax - vmin));
+      return y;
+    }
+
+    let lastData = null;
+    function drawFrame(data){
+      drawAxes();
+      if(!data) return;
+      const {samples, vmin, vmax} = data;
+      ctx.lineWidth = 2;
+      // Trazo principal
+      const grad = ctx.createLinearGradient(0,0,canvas.clientWidth,0);
+      grad.addColorStop(0, '#22d3ee');
+      grad.addColorStop(1, '#60a5fa');
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      for(let i=0;i<samples.length;i++){
+        const x = mapX(i, samples.length);
+        const y = mapY(samples[i], vmin, vmax);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+
+    // ———————————————— Simulación (única interacción) ————————————————
+    let running = false, raf = null, startTs = 0;
+
+    function synth(ts){
+      // Parámetros del modelo
+      const A = 1.0;            // amplitud
+      const f = 2.2;            // frecuencia (Hz aprox)
+      const delta = 0.8;        // factor de amortiguamiento
+      const noise = 0.12;       // sigma del ruido
+
+      const N = 480;            // muestras a dibujar
+      const sr = 120;           // "sample rate" lógico para la animación
+      const t0 = ts/1000;       // tiempo en segundos
+      const samples = new Array(N);
+      for(let i=0;i<N;i++){
+        const t = t0 + i/sr;
+        const s = A * Math.exp(-delta * t * 0.25) * Math.sin(2*Math.PI*f*t + 0.3);
+        const n = noise * (Math.random()*2-1);
+        samples[i] = s + n;
+      }
+      // Límites dinámicos
+      const vmax = 1.25, vmin = -1.25;
+      return {samples, vmin, vmax};
+    }
+
+    function loop(ts){
+      if(!running) return;
+      lastData = synth(ts - startTs);
+      drawFrame(lastData);
+      raf = requestAnimationFrame(loop);
+    }
+
+    function start(){
+      running = true; startTs = performance.now();
+      $('#status').innerHTML = 'Estado: <b>simulando…</b>';
+      $('#runBtn').setAttribute('aria-pressed','true');
+      drawAxes();
+      raf = requestAnimationFrame(loop);
+      // Auto‑stop suave a los 6 s para que sea una demo breve
+      setTimeout(() => { if(running) stop(); }, 6000);
+    }
+    function stop(){
+      running = false;
+      if(raf) cancelAnimationFrame(raf);
+      $('#status').innerHTML = 'Estado: <b>listo</b>';
+      $('#runBtn').setAttribute('aria-pressed','false');
+    }
+
+    $('#runBtn').addEventListener('click', () => {
+      if(!running) start();
+    });
+
+    // Render inicial
+    drawAxes();
+  </script>
+</body>
+</html>

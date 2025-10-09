@@ -1,124 +1,433 @@
 <!DOCTYPE html>
 <html lang="es">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>El Güiro Tech – Seguimos trabajando</title>
-
-  <!-- TIP RÁPIDO:
-       Si ya usás Tailwind u otro framework, podés quitar estos estilos
-       y reemplazarlos por clases utilitarias.  -->
+  <meta name="description" content="Página temporal estilo futurista mientras seguimos trabajando en más diseño para ti." />
+  <!-- Fuentes: Orbitron (título), Poppins (texto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="icon" href="Imagenes/El_Güiro_Tech.png" />
   <style>
- /* ---- NUEVAS VARIABLES ---- */
-:root{
-  --trail:#00bfff;           /* color de la estela */
-  --fg:#ffffff;
-  --bg:#0d1117;
-}
+    /* ---------- Variables ---------- */
+    :root{
+      /* Base futurista */
+      --bg:#0d1117; --bg2:#05060a;
+      --fg:#e6f1ff; --muted:#93a4bf;
+      --trail:#00bfff;
 
-/* ---- FONDO MÁS FUTURISTA ---- */
-body{
-  background:
-    radial-gradient(circle at 50% 50%, #0d1117 0%, #05060a 80%);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-}
+      /* Acentos (heredado del template) */
+      --accent1:#7AC7FF;
+      --accent2:#B794F4;
+      --accent3:#7AF2C2;
+      --ring: 0 10px 30px rgba(0,0,0,.35);
+      --glass: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.10);
+    }
 
-/* ---- IMG ESTÁTICA EN ESQUINA ---- */
-.logo{
-  position:fixed;
-  bottom:-20px;
-  left:24px;
-  width:350px;                     /* tamaño escritorio */
-  filter:drop-shadow(0 0 10px var(--trail));
-}
+    /* ---------- Reset / Base ---------- */
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+      color:var(--fg);
+      background:
+        radial-gradient(circle at 50% 50%, var(--bg) 0%, var(--bg2) 80%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%;height:auto}
 
-/* quitar animación pulse del <img> */
- .logo img{
-  width:100%;           /* ← esto hacía falta */
-  height:auto;
-  animation:none;
-}
-/* ---- ESTELA DE LUZ (ahora con núcleo-sol y brillo asimétrico) ---- */
-.light-trail{
-  position:fixed;
-  top:-400px;
-  left:50%;
-  width:600px;                 /* diámetro del “sol” */
-  height:600px;
-  transform:translateX(-50%);  /* mantener centrado */
-  filter:blur(60px);
-  pointer-events:none;
-  animation:rotateTrail 5s linear infinite;
-}
+    /* ---------- Layout util ---------- */
+    .container{max-width:1120px;margin:0 auto;padding:0 20px}
+    .grid{display:grid;gap:24px}
+    .card{
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--ring);
+      backdrop-filter:blur(8px);
+    }
+    .card-body{padding:22px}
+    .title{font-weight:800}
+    .muted{color:var(--muted)}
 
-/* núcleo celeste + penumbra */
-.light-trail{
-  background:radial-gradient(circle at center,
-              rgba(0,191,255,0.9) 0%,     /* centro intenso */
-              rgba(0,191,255,0.6) 30%,
-              rgba(0,191,255,0.25) 60%,
-              transparent 85%);
-}
+    .btn{display:inline-flex;align-items:center;gap:.6rem;font-weight:700;
+      border-radius:14px;padding:14px 20px;border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(0,191,255,.25), rgba(0,191,255,.12));
+      box-shadow:0 0 20px rgba(0,191,255,.18);
+      transition:transform .2s ease, filter .2s ease, box-shadow .2s ease;
+      cursor:pointer;
+    }
+    .btn:hover{transform:translateY(-1px);filter:saturate(1.08);box-shadow:0 0 28px rgba(0,191,255,.25)}
 
-/* sector ovalado extra-brillante (gira junto al sol) */
-.light-trail::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:radial-gradient(ellipse at 30% 50%, 
-              rgba(255,255,255,0.95) 0%,
-              rgba(255,255,255,0.5) 25%,
-              transparent 60%);
-  mix-blend-mode:screen;       /* fusión para resplandor */
-  border-radius:50%;
-}
+    .badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      font-weight:800;font-size:.9rem;letter-spacing:.3px;
+      padding:.5rem .8rem;border-radius:999px;
+      border:1px solid rgba(122,199,255,.45);
+      background:linear-gradient(180deg, rgba(122,199,255,.22), rgba(122,199,255,.08));
+      color:#cfe8ff; box-shadow:0 0 20px rgba(122,199,255,.15);
+    }
 
-/* animación de giro */
-@keyframes rotateTrail{
-  from{transform:translateX(-50%) rotate(0deg);}
-  to{transform:translateX(-50%) rotate(360deg);}
-}
-/* ---- TÍTULO NEÓN ---- */
-h1{
-  font-family:'Orbitron',sans-serif;   /* nuevo look */
-  letter-spacing:2px;
-  background:linear-gradient(90deg,var(--trail),#5e9eff 60%,var(--trail));
-  -webkit-background-clip:text;
-  color:transparent;
-  text-shadow:0 0 15px rgba(94,158,255,.6);
-  width:80vmin;              /* diámetro toma el menor lado de la pantalla */
-  height:80vmin;
-  top:calc(-0.66 * 80vmin);  /* la subimos 2/3 de su alto */
-}
-/* ---------- BREAKPOINT PARA PANTALLAS GRANDES ---------- */
-/* ---------- LOGO MÓVIL ---------- */
-@media (max-width:800px), (orientation:portrait){
-  .logo{ width:250px; }     /* se reduce solo en pantallas pequeñas */
-}
+    /* ---------- Navbar ---------- */
+    nav{
+      position:sticky;top:0;z-index:50;
+      background:rgba(13,17,23,0.55);
+      backdrop-filter:blur(8px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .brand-logo{height:32px;width:auto;border-radius:8px;box-shadow:0 0 18px rgba(0,191,255,.25)}
+    .links{display:flex;gap:14px}
+    .links a{opacity:.85;font-weight:700}
+    .links a:hover{opacity:1}
 
-/* ---------- SOL RESPONSIVE ---------- */
-.light-trail{
-  width:80vmin;
-  height:80vmin;
-  top:calc(-0.66 * 80vmin);
-}
+    /* ---------- Hero + estela ---------- */
+    .hero{position:relative;overflow:clip}
+    .hero-wrap{padding:84px 0 40px}
+    .hero h1{
+      font-family:'Orbitron',sans-serif;
+      font-weight:700;letter-spacing:2px;line-height:1.05;margin:12px 0 10px;
+      font-size:clamp(32px,6vw,56px);
+      background:linear-gradient(90deg,var(--trail),#5e9eff 60%,var(--trail));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      text-shadow:0 0 20px rgba(94,158,255,.35);
+    }
+    .hero p{font-size:clamp(16px,2.2vw,18px);color:var(--muted)}
 
+    .light-trail{
+      position:fixed;
+      top:calc(-0.66 * 80vmin);
+      left:50%;
+      width:80vmin;height:80vmin;
+      transform:translateX(-50%);
+      filter:blur(60px);
+      pointer-events:none;
+      animation:rotateTrail 6s linear infinite;
+      background:radial-gradient(circle at center,
+                  rgba(0,191,255,0.9) 0%,
+                  rgba(0,191,255,0.6) 30%,
+                  rgba(0,191,255,0.25) 60%,
+                  transparent 85%);
+    }
+    .light-trail::before{
+      content:"";position:absolute;inset:0;border-radius:50%;
+      background:radial-gradient(ellipse at 30% 50%,
+                  rgba(255,255,255,0.95) 0%,
+                  rgba(255,255,255,0.5) 25%,
+                  transparent 60%);
+      mix-blend-mode:screen;
+    }
+    @keyframes rotateTrail{
+      from{transform:translateX(-50%) rotate(0deg)}
+      to{transform:translateX(-50%) rotate(360deg)}
+    }
 
- </style>
+    /* Logo fijo */
+    .logo{
+      position:fixed;
+      bottom:-20px; left:24px; width:350px;
+      filter:drop-shadow(0 0 10px var(--trail));
+      z-index:40;
+    }
+    .logo img{width:100%;height:auto;animation:none}
+    @media (max-width:800px), (orientation:portrait){
+      .logo{width:230px}
+    }
+
+    /* ---------- Secciones ---------- */
+    .section{padding:70px 0;scroll-margin-top:80px}
+    .section .title{font-size:clamp(24px,3.8vw,34px)}
+
+    .cards-3{display:grid;gap:20px}
+    @media(min-width:800px){.cards-3{grid-template-columns:repeat(3,1fr)}}
+
+    .gallery{display:grid;gap:20px}
+    @media(min-width:700px){.gallery{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1000px){.gallery{grid-template-columns:repeat(3,1fr)}}
+    .thumb{
+      aspect-ratio:4/3;border-radius:14px;
+      background:linear-gradient(135deg, rgba(0,191,255,.15), rgba(183,148,244,.12));
+      display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--border);
+    }
+
+    .progress{
+      height:14px;border-radius:999px;overflow:hidden;
+      background:rgba(255,255,255,.08);border:1px solid var(--border);
+      box-shadow:inset 0 0 18px rgba(0,0,0,.25);
+    }
+    .progress > span{
+      display:block;height:100%;width:42%;
+      background:linear-gradient(90deg, rgba(0,191,255,.85), rgba(183,148,244,.85));
+      box-shadow:0 0 18px rgba(0,191,255,.45);
+      transition:width .6s ease;
+    }
+
+    .form{display:grid;gap:12px}
+    .input{
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:12px;padding:12px;color:var(--fg);font:inherit;
+      outline:none;transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .input:focus{
+      border-color:rgba(0,191,255,.6);
+      box-shadow:0 0 0 4px rgba(0,191,255,.15);
+    }
+    .credits{font-size:12px;color:var(--muted);text-align:center;margin-top:28px}
+
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+    /* ---------- Toast demo ---------- */
+    .toast{
+      position:fixed;right:20px;bottom:20px;z-index:60;
+      background:linear-gradient(180deg, rgba(0,191,255,.12), rgba(0,191,255,.06));
+      border:1px solid var(--border);
+      color:var(--fg);padding:12px 16px;border-radius:12px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      opacity:0;transform:translateY(8px);
+      pointer-events:none;
+      transition:opacity .22s ease, transform .22s ease;
+      display:flex;align-items:center;gap:10px;
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    .toast .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:radial-gradient(circle, rgba(0,191,255,1) 0%, rgba(0,191,255,.5) 60%, transparent 80%);
+      box-shadow:0 0 16px rgba(0,191,255,.6);
+    }
+  </style>
 </head>
 <body>
-<!-- NUEVO: estela luminosa -->
-<div class="light-trail"></div>
+  <!-- Estela luminosa -->
+  <div class="light-trail" aria-hidden="true"></div>
 
-<!-- LOGO (avatar) ahora envuelto en .logo -->
-<div class="logo">
-  <img src="Imagenes/El_Güiro_Tech.png" alt="Mascota de El Güiro Tech">
-</div>
- <h1>y&nbsp;seguimos&nbsp;trabajando<br>en&nbsp;más&nbsp;diseño&nbsp;para&nbsp;ti</h1>
+  <!-- NAV -->
+  <nav>
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="Ir al inicio">
+        <img class="brand-logo" src="Imagenes/El_Güiro_Tech.png" alt="Logo de El Güiro Tech" />
+        <span>El Güiro Tech</span>
+      </a>
+      <div class="links" role="navigation" aria-label="Secciones">
+        <a href="#estado">Estado</a>
+        <a href="#avances">Avances</a>
+        <a href="#contacto" class="btn" style="padding:8px 14px">Contacto</a>
+      </div>
+    </div>
+  </nav>
 
+  <!-- LOGO FIJO ESQUINA -->
+  <div class="logo" aria-hidden="true">
+    <img src="Imagenes/El_Güiro_Tech.png" alt="Mascota de El Güiro Tech">
+  </div>
+
+  <!-- HERO -->
+  <a id="top"></a>
+  <header class="hero">
+    <div class="container hero-wrap">
+      <span class="badge">⚙️ En obra — manteniendo el flow neón</span>
+      <h1>y&nbsp;seguimos&nbsp;trabajando<br/>en&nbsp;más&nbsp;diseño&nbsp;para&nbsp;ti</h1>
+      <p class="muted">Estamos afinando detalles con performance, UI y animaciones. Pronto soltamos la versión final para que la rompás con tu sitio. 🛠️🚀</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px">
+        <a class="btn" href="#avances">Ver avances</a>
+        <a class="btn" href="#contacto" aria-label="Ir a contacto">Escríbenos</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ESTADO -->
+  <section id="estado" class="section">
+    <div class="container">
+      <div style="max-width:780px">
+        <h2 class="title">Estado del proyecto</h2>
+        <p class="muted">Vamos paso a paso, sin dormirse en los laureles. Te dejamos un estimado del progreso global.</p>
+        <div class="card" style="margin-top:14px">
+          <div class="card-body">
+            <div class="grid" style="grid-template-columns:1fr;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <strong>Progreso</strong>
+                <span class="muted" id="progressLabel">42%</span>
+              </div>
+              <div class="progress" aria-label="Progreso del desarrollo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="42">
+                <span id="progressBar"></span>
+              </div>
+              <div class="muted" style="font-size:14px">Últimos ajustes: estructura, rendimiento y detallitos de UI.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVANCES -->
+  <section id="avances" class="section">
+    <div class="container">
+      <h3 class="title" style="text-align:left">Qué ya está quedando chilero</h3>
+      <div class="cards-3" style="margin-top:18px">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="title" style="display:flex;align-items:center;gap:10px">
+              <span style="background:rgba(122,199,255,.2);color:#cfe8ff;padding:8px;border-radius:12px">⚡</span>
+              Performance y accesibilidad
+            </h4>
+            <p class="muted">Estructura semántica, contraste, enfoque visible, y assets optimizados. Se siente suavecito al navegar.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h4 class="title" style="display:flex;align-items:center;gap:10px">
+              <span style="background:rgba(183,148,244,.2);color:#e6d9ff;padding:8px;border-radius:12px">🎛️</span>
+              UI neón responsiva
+            </h4>
+            <p class="muted">Botones, badges y tarjetas con glassmorphism y sombras neón sin perder la estética dark.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h4 class="title" style="display:flex;align-items:center;gap:10px">
+              <span style="background:rgba(122,242,194,.2);color:#d9fff2;padding:8px;border-radius:12px">🛰️</span>
+              Animaciones con cabeza
+            </h4>
+            <p class="muted">La estela/“sol” gira, transiciones sutiles y nada que pegue el rendimiento en móviles.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery" style="margin-top:22px">
+        <div class="card">
+          <div class="thumb">✨</div>
+          <div class="card-body">
+            <div class="title">Vista hero</div>
+            <p class="muted">Titulo Orbitron + glow con estela arriba.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb">💠</div>
+          <div class="card-body">
+            <div class="title">Navbar glass</div>
+            <p class="muted">Translúcido y pegajoso con blur.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="thumb">🧩</div>
+          <div class="card-body">
+            <div class="title">Cards neon</div>
+            <p class="muted">Sombras y bordes sutiles, dark-friendly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <footer id="contacto" class="section">
+    <div class="container grid" style="grid-template-columns:1fr;gap:28px">
+      <div class="grid" style="grid-template-columns:1fr;gap:28px">
+        <div>
+          <h4 class="title" style="font-size:clamp(22px,3vw,28px)">¿Tenés dudas o querés hablar?</h4>
+          <p class="muted">Tirá tu mensajito y te respondemos al chilazo. Aquí todo es DEMO (sin acciones reales).</p>
+          <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap">
+            <!-- Botones simulados -->
+            <button type="button" class="btn" data-sim="email">✉️ Escribir</button>
+            <button type="button" class="btn" data-sim="call">📞 Llamar</button>
+          </div>
+          <div class="muted" style="display:flex;gap:10px;margin-top:12px">📘 Facebook · 📷 Instagram</div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form class="form" onsubmit="event.preventDefault(); showToast('Demo: envío deshabilitado');">
+              <label>
+                <span class="sr-only">Tu nombre</span>
+                <input class="input" placeholder="Tu nombre" required>
+              </label>
+              <label>
+                <span class="sr-only">Email o WhatsApp</span>
+                <input class="input" placeholder="Email o WhatsApp" required>
+              </label>
+              <label>
+                <span class="sr-only">Cuéntanos tu idea</span>
+                <textarea class="input" rows="4" placeholder="Cuéntanos tu idea"></textarea>
+              </label>
+              <button class="btn" type="submit">Enviar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="credits">© <span id="y"></span> — El Güiro Tech. Hecho con cariño y neón.</div>
+    </div>
+  </footer>
+
+  <!-- Toast DEMO -->
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="toastMsg">Demo: acción deshabilitada</span>
+  </div>
+
+  <script>
+    // Año footer
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Smooth scroll con offset del navbar
+    (function(){
+      const nav = document.querySelector('nav');
+      const navH = () => (nav ? nav.getBoundingClientRect().height : 0);
+
+      function scrollToHash(hash){
+        const el = document.querySelector(hash);
+        if(!el) return;
+        const y = el.getBoundingClientRect().top + window.pageYOffset - navH() - 8;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', (e)=>{
+          const h = a.getAttribute('href');
+          if(h && h.length > 1){
+            e.preventDefault();scrollToHash(h);history.pushState(null,'',h);
+          }
+        });
+      });
+      if(location.hash){ setTimeout(()=>scrollToHash(location.hash), 0); }
+    })();
+
+    // Toast helper
+    function showToast(msg){
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toastMsg');
+      if(!t || !m) return;
+      m.textContent = msg || 'Demo: acción deshabilitada';
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+    }
+
+    // Botones "simulados" (sin mailto/tel)
+    document.querySelectorAll('[data-sim]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const kind = btn.dataset.sim;
+        if(kind === 'email') showToast('Demo: envío deshabilitado');
+        else if(kind === 'call') showToast('Demo: llamada deshabilitada');
+        else showToast('Demo: acción deshabilitada');
+      });
+    });
+
+    // Barra de progreso (valor demo)
+    (function setProgress(pct){
+      const bar = document.getElementById('progressBar');
+      const lbl = document.getElementById('progressLabel');
+      if(!bar || !lbl) return;
+      const v = Math.max(0, Math.min(100, pct|0));
+      bar.style.width = v + '%';
+      lbl.textContent = v + '%';
+      const progress = bar.parentElement;
+      progress.setAttribute('aria-valuenow', String(v));
+    })(42);
+  </script>
 </body>
 </html>
