@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plantilla — Estilo Dark Souls</title>
+  <!-- Tipografías con vibe medieval -->
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0d0f;            /* fondo casi negro */
+      --bg-2:#0e1317;          /* fondo paneles */
+      --fg:#e7e3d4;            /* texto principal (marfil gastado) */
+      --muted:#9da4a6;         /* texto secundario */
+      --accent:#c2a35d;        /* dorado envejecido */
+      --accent-2:#f0d28a;      /* brillo */
+      --danger:#b34b3f;        /* rojo sangre suave */
+      --radius:18px;
+      --shadow:0 20px 60px rgba(0,0,0,.6);
+      --ring:0 0 0 1px rgba(194,163,93,.35), 0 0 32px rgba(194,163,93,.06) inset;
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family:Inter,system-ui,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+      line-height:1.45; overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+
+    /* ===== Fondo: gradiente + ruido + brasas ===== */
+    .bg{
+      position:fixed; inset:0; pointer-events:none; z-index:-3;
+      background: radial-gradient(1200px 600px at 70% -10%, rgba(194,163,93,.08), transparent 60%),
+                  radial-gradient(900px 400px at 10% 10%, rgba(142,68,35,.08), transparent 55%),
+                  linear-gradient(180deg, #0a0d0f 0%, #0b0f14 60%, #0a0d0f 100%);
+    }
+    .noise{position:fixed; inset:0; pointer-events:none; z-index:-2; opacity:.07; mix-blend-mode:soft-light;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">\
+      <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter>\
+      <rect width="100%" height="100%" filter="url(%23n)" opacity="0.6"/></svg>');
+      background-size:160px 160px; animation:noise 1.2s steps(2) infinite;
+    }
+    @keyframes noise{to{transform:translate3d(0,0,0)}}
+    canvas#embers{position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.6}
+
+    /* ===== Header / Nav ===== */
+    header{
+      position:sticky; top:0; z-index:50; backdrop-filter:blur(8px);
+      background:linear-gradient(180deg, rgba(10,13,15,.8), rgba(10,13,15,.4));
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .nav{max-width:1080px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:16px}
+    .brand{display:flex; align-items:center; gap:14px;}
+    .logo{
+      width:40px;height:40px;border-radius:10px; display:grid; place-items:center;
+      background:conic-gradient(from 40deg, #33230f, #b37a36, #33230f);
+      box-shadow:var(--ring), 0 8px 30px rgba(194,163,93,.15);
+      font-family:"UnifrakturMaguntia", serif; font-size:22px; letter-spacing:.5px; color:#1a0;
+    }
+    .brand h1{font-family:"Cinzel", serif; font-weight:800; font-size:18px; letter-spacing:.8px}
+    nav{margin-left:auto; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px;
+      background:linear-gradient(180deg, rgba(30,33,37,.7), rgba(22,25,28,.7));
+      border:1px solid rgba(255,255,255,.06); color:var(--fg); font-weight:600; font-size:14px;
+      transition:transform .2s var(--ease), box-shadow .2s var(--ease), background .2s var(--ease);
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 24px rgba(194,163,93,.12) inset}
+    .btn.primary{background:linear-gradient(180deg, rgba(68,52,24,.9), rgba(38,30,14,.9)); border-color:rgba(194,163,93,.45); color:var(--accent-2)}
+
+    /* ===== Hero ===== */
+    .hero{max-width:1080px; margin:32px auto 0; padding:28px 20px 40px; display:grid; grid-template-columns:1.1fr .9fr; gap:24px; align-items:center}
+    .title{
+      font-family:"UnifrakturMaguntia", serif; font-weight:400; font-size:clamp(38px, 5vw, 64px);
+      letter-spacing:.6px; line-height:1.05; text-shadow:0 0 0 rgba(0,0,0,0);
+    }
+    .subtitle{color:var(--muted); margin-top:12px; font-size:16px}
+    .hero-card{
+      background:linear-gradient(180deg, rgba(18,22,26,.9), rgba(10,13,15,.9)); border:1px solid rgba(255,255,255,.06);
+      border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+    }
+    .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px}
+    .stat{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:14px; text-align:center}
+    .k{font-family:"Cinzel", serif; font-size:20px; color:var(--accent-2); font-weight:800}
+    .label{color:var(--muted); font-size:12px}
+
+    /* ===== Secciones ===== */
+    section{max-width:1080px; margin:36px auto; padding:0 20px}
+    h2{
+      font-family:"Cinzel", serif; font-weight:800; letter-spacing:.8px; font-size:clamp(22px, 2.6vw, 30px);
+      margin:2px 0 14px; color:var(--accent-2);
+      text-shadow:0 0 18px rgba(194,163,93,.08);
+    }
+    .grid{display:grid; gap:16px}
+    .grid.cols-2{grid-template-columns:1.1fr .9fr}
+    .panel{
+      background:linear-gradient(180deg, rgba(22,27,31,.8), rgba(14,17,20,.85));
+      border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);
+    }
+    .panel p{color:#d7d4c4}
+
+    /* Listas estilo pergamino */
+    .list{display:grid; gap:10px; list-style:none; margin:0; padding:0}
+    .list li{padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03)}
+    .list li strong{color:var(--accent-2)}
+
+    /* Cards de clases */
+    .cards{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+    .card{background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:14px; transition:transform .2s var(--ease), box-shadow .2s var(--ease)}
+    .card:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(0,0,0,.5)}
+    .card h3{font-family:"Cinzel", serif; margin:4px 0 6px; font-size:18px; color:var(--accent)}
+    .meta{font-size:12px; color:var(--muted)}
+
+    /* Línea de jefes */
+    .timeline{position:relative; padding-left:18px}
+    .timeline:before{content:""; position:absolute; left:7px; top:4px; bottom:4px; width:2px; background:linear-gradient(var(--accent), transparent)}
+    .boss{position:relative; padding:10px 12px 10px 18px; margin-bottom:8px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); border-radius:12px}
+    .boss:before{content:""; position:absolute; left:-2px; top:14px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+
+    /* Hoguera (botón) */
+    .bonfire{
+      margin:32px auto 8px; width:220px; height:220px; border-radius:50%;
+      background:radial-gradient(circle at 50% 60%, #2b1a0f 0, #1a0f08 55%, transparent 60%),
+                 conic-gradient(from 0deg, rgba(255,140,60,.2), rgba(255,80,30,.15), rgba(255,200,120,.2), rgba(160,80,30,.15), rgba(255,140,60,.2));
+      border:1px solid rgba(255,255,255,.06); box-shadow:0 0 0 1px rgba(255,255,255,.03) inset, 0 30px 60px rgba(0,0,0,.6);
+      display:grid; place-items:center; cursor:pointer; position:relative; overflow:hidden;
+      transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .bonfire:hover{transform:translateY(-2px); box-shadow:0 40px 90px rgba(0,0,0,.7)}
+    .bonfire .flame{position:absolute; bottom:58px; width:26px; height:40px; background:radial-gradient(circle at 50% 80%, #ffd18a 0, #ff9b3d 55%, rgba(255,80,20,.9) 70%, transparent 71%); filter:blur(.3px); animation:flicker .12s infinite alternate}
+    .bonfire .flame:nth-child(2){left:calc(50% - 10px); transform:scale(1.1) translateX(-22px)}
+    .bonfire .flame:nth-child(3){left:calc(50% + 10px); transform:scale(.95) translateX(10px)}
+    @keyframes flicker{from{transform:translateY(0) scaleY(1)} to{transform:translateY(-3px) scaleY(1.08)}}
+    .bonfire .log{position:absolute; bottom:40px; width:66px; height:10px; background:linear-gradient(180deg,#3a2a16,#1d140b); border-radius:10px; box-shadow:inset 0 0 12px rgba(255,255,255,.05)}
+    .bonfire .log:nth-child(4){transform:rotate(22deg)}
+    .bonfire .log:nth-child(5){transform:rotate(-22deg)}
+    .bonfire span{position:absolute; bottom:10px; font-family:"Cinzel", serif; font-size:12px; color:var(--accent-2)}
+
+    /* Footer */
+    footer{margin-top:20px; padding:24px 20px 60px; text-align:center; color:var(--muted)}
+
+    /* Animación de aparición */
+    .reveal{opacity:0; transform:translateY(12px); transition:opacity .6s var(--ease), transform .6s var(--ease)}
+    .reveal.visible{opacity:1; transform:none}
+
+    /* Responsivo */
+    @media (max-width: 880px){
+      .hero{grid-template-columns:1fr}
+      .grid.cols-2{grid-template-columns:1fr}
+      .cards{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">DS</div>
+        <h1>Dark Codex</h1>
+      </div>
+      <nav>
+        <a class="btn" href="#lore">Lore</a>
+        <a class="btn" href="#clases">Clases</a>
+        <a class="btn" href="#jefes">Jefes</a>
+        <a class="btn" href="#consejos">Consejos</a>
+        <a class="btn primary" href="#contacto">Contactar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <div class="title" id="type">Forja tu destino en la oscuridad</div>
+        <p class="subtitle">Plantilla informativa con estética soulslike: dorados envejecidos, brasas flotantes, tipografías góticas y micro-animaciones elegantes. Ideal para presentar lore, clases, jefes y guías sin depender de imágenes.</p>
+        <div style="display:flex; gap:10px; margin-top:16px">
+          <a href="#lore" class="btn primary">Empezar</a>
+          <a href="#contacto" class="btn">Quiero algo así</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">60fps</div><div class="label">Animación canvas</div></div>
+          <div class="stat"><div class="k">0 imgs</div><div class="label">Solo CSS/Canvas</div></div>
+          <div class="stat"><div class="k">100%</div><div class="label">Editable</div></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h2 style="margin:4px 0 10px">Resumen</h2>
+        <p>Este layout muestra cómo luciría un sitio tipo Dark Souls para informar sobre tu proyecto, juego, comunidad o campaña. Estructura limpia, jerarquía clara y estética medieval sin sacrificar rendimiento.</p>
+        <ul class="list" style="margin-top:10px">
+          <li><strong>Estética:</strong> tipografías góticas, dorado envejecido, brasas, ruido de película.</li>
+          <li><strong>Interacción:</strong> revelado al hacer scroll, hoguera clicable, desplazamiento suave.</li>
+          <li><strong>Accesibilidad:</strong> contraste alto, sin parpadeos agresivos, sin imágenes obligatorias.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- LORE -->
+    <section id="lore" class="reveal">
+      <h2>El mundo y su maldición</h2>
+      <div class="grid cols-2">
+        <div class="panel">
+          <p>
+            En épocas olvidadas, la Llama Primigenia marcó el destino de reinos enteros. Hoy, solo quedan cenizas, ecos de acero
+            y juramentos rotos. Esta sección es ideal para un resumen de tu historia, misión o producto: qué es, de dónde viene y por qué importa.
+          </p>
+          <p style="margin-top:8px" class="meta">Consejo: usa párrafos cortos y subtítulos. La gente escanea antes de leer.</p>
+        </div>
+        <div class="panel">
+          <ul class="list">
+            <li><strong>Época:</strong> Edad de la Llama tardía</li>
+            <li><strong>Regiones:</strong> Bastión Hollow, Ciénaga Umbría, Catedral de Hueso</li>
+            <li><strong>Facciones:</strong> Vigías del Bronce, Jurados del Fuego, Pálidos</li>
+            <li><strong>Tono:</strong> Melancólico, heroico, crudo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLASES -->
+    <section id="clases" class="reveal">
+      <h2>Clases iniciales</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Caballero</h3>
+          <p>Armadura fiable, espada larga, escudo con blasón. Fácil de aprender, difícil de dominar.</p>
+          <div class="meta">Defensa alta · Estamina consistente</div>
+        </div>
+        <div class="card">
+          <h3>Piromante</h3>
+          <p>Fuego ancestral al alcance de la mano. Riesgo alto, daño explosivo.</p>
+          <div class="meta">Daño en área · Requiere timing</div>
+        </div>
+        <div class="card">
+          <h3>Clérigo</h3>
+          <p>Milagros de sanación y maza consagrada. Soporte ideal para grupos.</p>
+          <div class="meta">Sustain · Equilibrio</div>
+        </div>
+        <div class="card">
+          <h3>Mercenario</h3>
+          <p>Ágil y letal con armas gemelas. Aprovecha aberturas y crítico.</p>
+          <div class="meta">Movilidad · Castigos rápidos</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JEFES -->
+    <section id="jefes" class="reveal">
+      <h2>Jefes memorables</h2>
+      <div class="timeline">
+        <div class="boss"><strong>Centinela de Ceniza</strong> — Guarda los vestigios de la hoguera original.</div>
+        <div class="boss"><strong>Monja de la Aguja</strong> — Bailarina ascética que degüella el silencio.</div>
+        <div class="boss"><strong>Señor de los Vínculos</strong> — Encadena promesas rotas, rompe voluntades.</div>
+      </div>
+      <p class="meta">Tip: puedes convertir esta línea en checklist de hitos, roadmap o FAQs.</p>
+    </section>
+
+    <!-- CONSEJOS -->
+    <section id="consejos" class="reveal">
+      <h2>Consejos del no-muerto</h2>
+      <div class="grid cols-2">
+        <div class="panel">
+          <ul class="list">
+            <li><strong>Paciencia:</strong> estudia patrones, no corras a ciegas.</li>
+            <li><strong>Build:</strong> invierte en 2–3 stats, no en todos.</li>
+            <li><strong>Equipo:</strong> mejora pocas armas, pero hasta +10.</li>
+            <li><strong>Atajos:</strong> siempre hay una puerta que se abre por el otro lado.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <p>
+            ¿Quieres esta sección como guía de compra, checklist de proyecto o pasos de onboarding?
+            Solo cambia los ítems. El estilo se mantiene igual.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOGUERA / CTA -->
+    <section class="reveal" aria-label="Hoguera">
+      <div class="bonfire" id="bonfire" role="button" aria-pressed="false" title="Descansa en la hoguera (toggle de aura)">
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="flame"></div>
+        <div class="log"></div>
+        <div class="log"></div>
+        <span>Descansar</span>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="reveal">
+      <h2>¿Listo para encender tu proyecto?</h2>
+      <div class="panel">
+        <form onsubmit="event.preventDefault(); alert('Demo: aquí enviarías el formulario.');" class="grid" style="grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px">
+          <input aria-label="Nombre" required placeholder="Nombre" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0e1215;color:var(--fg)">
+          <input aria-label="Correo" required type="email" placeholder="Correo" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0e1215;color:var(--fg)">
+          <textarea aria-label="Mensaje" required placeholder="¿Qué necesitas?" rows="4" style="grid-column:1/-1;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0e1215;color:var(--fg)"></textarea>
+          <button class="btn primary" style="width:max-content">Enviar (demo)</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>© <span id="y"></span> Dark Codex — Plantilla soulslike lista para clonar y adaptar.</div>
+  </footer>
+
+  <script>
+    // ===== Año
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // ===== Typewriter suave para el título
+    (function typewriter(){
+      const el = document.getElementById('type');
+      const txt = el.textContent.trim();
+      el.textContent = '';
+      let i = 0;
+      const tick = () => {
+        el.textContent = txt.slice(0, ++i);
+        if(i < txt.length) requestAnimationFrame(tick);
+      };
+      tick();
+    })();
+
+    // ===== Reveal on scroll (IntersectionObserver)
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target)} })
+    }, {threshold:.12});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    // ===== Scroll suave para los anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href');
+        const target = document.querySelector(id);
+        if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+      })
+    })
+
+    // ===== Brasas en canvas (efecto partículas ligero)
+    const cv = document.getElementById('embers');
+    const ctx = cv.getContext('2d');
+    let w, h, dpr;
+    const parts = [];
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = cv.width = Math.floor(innerWidth * dpr);
+      h = cv.height = Math.floor(innerHeight * dpr);
+      cv.style.width = innerWidth + 'px';
+      cv.style.height = innerHeight + 'px';
+    }
+    window.addEventListener('resize', resize, {passive:true});
+    resize();
+
+    function spawn(){
+      const x = Math.random() * w;
+      const y = h - Math.random() * (h * .25);
+      return {x,y, vx:(Math.random()-.5)*.12, vy: -(.3 + Math.random()*.6), r: 1 + Math.random()*2.5, a: .15 + Math.random()*.25};
+    }
+    for(let i=0;i<90;i++) parts.push(spawn());
+
+    function loop(){
+      ctx.clearRect(0,0,w,h);
+      for(const p of parts){
+        p.x += p.vx; p.y += p.vy; p.a *= 0.997; p.r *= 0.999;
+        if(p.y < h * .15 || p.a < .02){ Object.assign(p, spawn()); p.y = h - 2 }
+        const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*8);
+        g.addColorStop(0, `rgba(255,210,138,${p.a})`);
+        g.addColorStop(.4, `rgba(255,155,61,${p.a*0.7})`);
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r*8,0,Math.PI*2); ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    // ===== Hoguera: toggle de aura (aumenta brasas temporalmente)
+    const bonfire = document.getElementById('bonfire');
+    let boost = null;
+    bonfire.addEventListener('click', ()=>{
+      const pressed = bonfire.getAttribute('aria-pressed') === 'true';
+      bonfire.setAttribute('aria-pressed', String(!pressed));
+      bonfire.querySelector('span').textContent = pressed ? 'Descansar' : 'Fuego encendido';
+      if(!pressed){
+        // boost de partículas por 4s
+        if(boost) cancelAnimationFrame(boost);
+        const extra = Array.from({length:70}, spawn);
+        parts.push(...extra);
+        const t0 = performance.now();
+        (function fade(){
+          const t = performance.now() - t0;
+          // Gradualmente reduce al conteo base
+          if(t > 4000){ parts.splice(90); return; }
+          boost = requestAnimationFrame(fade);
+        })();
+      }
+    });
+  </script>
+</body>
+</html>
