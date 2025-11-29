@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generador de CV en PDF (Carta)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Fonts para el CV -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Montserrat:wght@300;400;600;700;800&family=Roboto+Slab:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Librería html2pdf.js -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"
+    integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe, #e5e7eb 40%, #fef3c7);
+      color: #111827;
+    }
+
+    h1, h2, h3, h4 { margin: 0; }
+
+    .app {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-radius: 0.9rem;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .builder {
+      flex: 1 1 340px;
+      max-width: 460px;
+    }
+
+    .preview-wrapper {
+      flex: 2 1 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border-radius: 0.7rem;
+      border: 1px solid #d1d5db;
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+      resize: vertical;
+      background: #f9fafb;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
+      transform: translateY(-1px);
+      background: #ffffff;
+    }
+
+    .field-group { margin-bottom: 0.55rem; }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+
+    .help-text {
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 0.15rem;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s, filter 0.12s;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
+      box-shadow: 0 10px 25px rgba(236, 72, 153, 0.5);
+    }
+
+    button.primary:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px) scale(1.01);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, #f9fafb, #e0f2fe);
+      color: #111827;
+      box-shadow: 0 5px 14px rgba(148, 163, 184, 0.4);
+    }
+
+    button.secondary:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    small { font-size: 0.7rem; }
+
+    /* ====== BOTONES DE SECCIONES ====== */
+
+    .section-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .section-tab {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(248, 250, 252, 0.9);
+      color: #374151;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .section-tab.active {
+      background: linear-gradient(135deg, #f97316, #ec4899);
+      color: #f9fafb;
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.5);
+      border-color: transparent;
+    }
+
+    .section-form {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition:
+        max-height 0.4s ease,
+        opacity 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    .section-form.active {
+      max-height: 1200px;
+      opacity: 1;
+      transform: translateY(0);
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .section-form-inner {
+      padding-top: 0.25rem;
+      border-top: 1px dashed #e5e7eb;
+      margin-top: 0.25rem;
+    }
+
+    /* ====== GRUPOS REPETIBLES ( + Añadir ) ====== */
+
+    .repeat-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .repeat-item {
+      border-radius: 0.7rem;
+      border: 1px dashed #cbd5f5;
+      padding: 0.4rem 0.5rem;
+      background: #f9fafb;
+    }
+
+    .repeat-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.2rem;
+    }
+
+    .repeat-item-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4b5563;
+    }
+
+    .remove-item {
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 0.8rem;
+      padding: 0.1rem 0.4rem;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .remove-item:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .add-item-btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(239, 246, 255, 0.9);
+      color: #1d4ed8;
+      border: 1px solid rgba(191, 219, 254, 0.9);
+      box-shadow: 0 3px 8px rgba(147, 197, 253, 0.6);
+    }
+
+    .add-item-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    /* ====== CONTROLES DE FUENTE ====== */
+
+    .font-settings {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+      margin-bottom: 0.7rem;
+      padding: 0.5rem 0.6rem;
+      border-radius: 0.7rem;
+      background: linear-gradient(135deg, #eff6ff, #fdf2ff);
+      border: 1px solid rgba(191, 219, 254, 0.8);
+    }
+
+    .font-settings label {
+      margin-bottom: 0.15rem;
+    }
+
+    .font-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .font-slider-row input[type="number"] {
+      width: 3.2rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      font-size: 0.75rem;
+    }
+
+    /* ====== PREVIEW CV: Hoja carta ====== */
+
+    .preview-container { overflow: auto; }
+
+    /* 8.5" x 11" ≈ 816 x 1056 px a 96dpi */
+    #cv-preview {
+      background: white;
+      width: 760px;
+      min-height: 1056px;
+      margin: 0 auto;
+      padding: 0.8rem 0.9rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+      color: #111827;
+      position: relative;
+      overflow: hidden;
+      font-size: 12px; /* tamaño base inicial */
+
+      /* CV completo en columna */
+      display: flex;
+      flex-direction: column;
+    }
+
+    #cv-preview::before,
+    #cv-preview::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(36px);
+      opacity: 0.25;
+      z-index: 0;
+    }
+
+    #cv-preview::before {
+      width: 200px;
+      height: 200px;
+      top: -60px;
+      right: -40px;
+      background: radial-gradient(circle, #a855f7, #6366f1);
+    }
+
+    #cv-preview::after {
+      width: 230px;
+      height: 230px;
+      bottom: -80px;
+      left: -70px;
+      background: radial-gradient(circle, #ec4899, #f97316);
+    }
+
+    .cv-header {
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cv-header-text { flex: 1; }
+
+    .cv-name {
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      font-weight: 800;
+      color: inherit;
+    }
+
+    .cv-title {
+      font-size: 0.9rem;
+      color: inherit;
+      margin-top: 0.1rem;
+      opacity: 0.9;
+    }
+
+    .cv-contact {
+      font-size: 0.75rem;
+      color: inherit;
+      margin-top: 0.3rem;
+      opacity: 0.85;
+    }
+
+    .cv-photo-wrapper {
+      width: 90px;
+      height: 90px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.25);
+    }
+
+    .cv-photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cv-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0.8rem;
+      margin-top: 0.4rem;
+      font-size: 0.78rem;
+      color: inherit;
+    }
+
+    .cv-main { flex: 2; color: inherit; }
+    .cv-aside { flex: 1; color: inherit; }
+
+    .cv-section { margin-bottom: 0.45rem; color: inherit; }
+
+    .cv-section-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-bottom: 0.18rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: inherit;
+    }
+
+    .cv-section-title::before {
+      content: "";
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .cv-section p { margin: 0; color: inherit; }
+
+    .cv-list {
+      margin: 0.12rem 0 0 0;
+      padding-left: 0.95rem;
+      color: inherit;
+    }
+
+    .cv-list li {
+      margin-bottom: 0.06rem;
+      line-height: 1.25;
+      color: inherit;
+    }
+
+    /* ====== 10 PLANTILLAS (ajustadas a carta) ====== */
+
+    /* 1 – Aurora Pastel (Poppins, colores suaves y texto gris oscuro) */
+    .cv-template-1 {
+      background: radial-gradient(circle at top left, #eef2ff, #fef9c3 45%, #fdf2f8);
+      color: #1f2937;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-1 .cv-header {
+      border-bottom-color: transparent;
+      border-radius: 0.7rem;
+      padding: 0.7rem 0.9rem;
+      margin: -0.2rem -0.2rem 0.6rem;
+      background: linear-gradient(120deg, rgba(129, 140, 248, 0.95), rgba(248, 113, 113, 0.9));
+      color: #f9fafb;
+      box-shadow: 0 12px 32px rgba(79, 70, 229, 0.55);
+    }
+    .cv-template-1 .cv-name {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 1.45rem;
+      color: #f9fafb;
+    }
+    .cv-template-1 .cv-title { color: #e0e7ff; }
+    .cv-template-1 .cv-contact { color: #e5e7eb; }
+    .cv-template-1 .cv-photo-wrapper {
+      border-radius: 1rem;
+      border-color: rgba(224, 231, 255, 0.95);
+      background: rgba(15, 23, 42, 0.1);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-1 .cv-body { margin-top: 0.7rem; color: #111827; }
+    .cv-template-1 .cv-main,
+    .cv-template-1 .cv-aside {
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 0.7rem;
+      padding: 0.6rem 0.65rem;
+      box-shadow: 0 6px 14px rgba(148, 163, 184, 0.4);
+    }
+    .cv-template-1 .cv-section-title {
+      background: rgba(255, 255, 255, 0.93);
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      box-shadow: 0 5px 14px rgba(148, 163, 184, 0.45);
+      color: #111827;
+    }
+    .cv-template-1 .cv-section-title::before {
+      background: radial-gradient(circle, #f97316, #ec4899);
+    }
+    .cv-template-1 .cv-list li::marker { color: #f97316; }
+
+    /* 2 – Neón Night (Montserrat, texto claro sobre fondo oscuro) */
+    .cv-template-2 {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e5e7eb;
+      font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-2 .cv-header {
+      border-bottom: none;
+      margin: -0.1rem -0.4rem 0.7rem;
+      padding: 0.9rem 1.1rem;
+      background:
+        radial-gradient(circle at 0% 0%, #22c55e, transparent 55%),
+        radial-gradient(circle at 100% 0%, #f97316, transparent 55%),
+        linear-gradient(120deg, #020617, #020617);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      color: #e5e7eb;
+    }
+    .cv-template-2 .cv-name { font-size: 1.55rem; color: #f9fafb; }
+    .cv-template-2 .cv-title { color: #a5b4fc; font-size: 0.88rem; }
+    .cv-template-2 .cv-contact { color: #e5e7eb; }
+    .cv-template-2 .cv-photo-wrapper {
+      border-radius: 999px;
+      border: 2px solid rgba(94, 234, 212, 0.9);
+      box-shadow:
+        0 0 0 2px rgba(56, 189, 248, 0.4),
+        0 12px 30px rgba(15, 23, 42, 0.9);
+      background: radial-gradient(circle at 30% 0, #22c55e, #0f172a);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-2 .cv-body {
+      margin-top: 0.7rem;
+      gap: 0.8rem;
+      color: #e5e7eb;
+    }
+    .cv-template-2 .cv-main,
+    .cv-template-2 .cv-aside {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 0.7rem;
+      padding: 0.6rem 0.7rem;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e5e7eb;
+    }
+    .cv-template-2 .cv-section-title {
+      color: #e5e7eb;
+      text-shadow: 0 0 6px rgba(129, 140, 248, 0.9);
+    }
+    .cv-template-2 .cv-section-title::before {
+      background: radial-gradient(circle, #22c55e, #38bdf8);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+    }
+    .cv-template-2 .cv-list li::marker { color: #22c55e; }
+
+    /* 3 – Candy Cards (Poppins, tonos pastel vivos) */
+    .cv-template-3 {
+      background: linear-gradient(135deg, #fdf2f8, #e0f2fe 50%, #dcfce7);
+      color: #7f1d1d;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-3 .cv-header {
+      background: #ffffffee;
+      border-radius: 0.7rem;
+      border-bottom: none;
+      box-shadow: 0 12px 26px rgba(244, 114, 182, 0.4);
+      margin-bottom: 0.7rem;
+      padding: 0.7rem 0.9rem;
+      color: #7f1d1d;
+    }
+    .cv-template-3 .cv-name {
+      color: #be123c;
+      letter-spacing: 0.06em;
+      font-size: 1.45rem;
+    }
+    .cv-template-3 .cv-title { color: #fb7185; }
+    .cv-template-3 .cv-contact { color: #9f1239; }
+    .cv-template-3 .cv-photo-wrapper {
+      border-radius: 1.2rem;
+      border-color: #fb7185;
+      background: radial-gradient(circle at 0 0, #f97316, #fb7185);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-3 .cv-body {
+      margin-top: 0.7rem;
+      color: #7f1d1d;
+    }
+    .cv-template-3 .cv-main,
+    .cv-template-3 .cv-aside {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: #7f1d1d;
+    }
+    .cv-template-3 .cv-section {
+      border-radius: 0.7rem;
+      padding: 0.5rem 0.6rem;
+      box-shadow: 0 9px 18px rgba(251, 113, 133, 0.28);
+      position: relative;
+      color: #7f1d1d;
+    }
+    .cv-template-3 .cv-section:nth-child(1) {
+      background: linear-gradient(135deg, #fef3c7, #fef9c3);
+    }
+    .cv-template-3 .cv-section:nth-child(2) {
+      background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+    }
+    .cv-template-3 .cv-section:nth-child(3) {
+      background: linear-gradient(135deg, #ede9fe, #fecaca);
+    }
+    .cv-template-3 .cv-section:nth-child(4) {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    }
+    .cv-template-3 .cv-aside .cv-section:nth-child(1) {
+      background: linear-gradient(135deg, #fef9c3, #fecaca);
+    }
+    .cv-template-3 .cv-aside .cv-section:nth-child(2) {
+      background: linear-gradient(135deg, #e0f2fe, #ede9fe);
+    }
+    .cv-template-3 .cv-section-title {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: #7f1d1d;
+    }
+    .cv-template-3 .cv-section-title::before {
+      background: radial-gradient(circle, #f97316, #fb7185);
+    }
+    .cv-template-3 .cv-list li::marker { color: #be123c; }
+
+    /* 4 – Diagonal Ribbon (Montserrat, azules profesionales) */
+    .cv-template-4 {
+      background: linear-gradient(135deg, #eff6ff, #e0f2fe 40%, #fef3c7);
+      color: #0f172a;
+      font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-4::before,
+    .cv-template-4::after { filter: blur(28px); }
+    .cv-template-4 .cv-header {
+      border-bottom: none;
+      margin-bottom: 0.75rem;
+      padding-top: 0.9rem;
+      color: #f9fafb;
+    }
+    .cv-template-4 .cv-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, #0ea5e9, #6366f1);
+      transform: skewY(-5deg);
+      transform-origin: top left;
+      z-index: -1;
+      opacity: 0.95;
+    }
+    .cv-template-4 .cv-name {
+      color: #f9fafb;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 1.45rem;
+    }
+    .cv-template-4 .cv-title { color: #e0f2fe; }
+    .cv-template-4 .cv-contact { color: #e5f3ff; }
+    .cv-template-4 .cv-photo-wrapper {
+      border-radius: 999px;
+      border-color: #e0f2fe;
+      background: radial-gradient(circle at 30% 0, #0ea5e9, #1d4ed8);
+      box-shadow: 0 16px 30px rgba(30, 64, 175, 0.8);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-4 .cv-body {
+      margin-top: 0.8rem;
+      border-left: 2px dashed rgba(148, 163, 184, 0.9);
+      padding-left: 0.8rem;
+      color: #0f172a;
+    }
+    .cv-template-4 .cv-section {
+      position: relative;
+      padding-left: 0.08rem;
+      color: #0f172a;
+    }
+    .cv-template-4 .cv-section::before {
+      content: "";
+      position: absolute;
+      left: -0.9rem;
+      top: 0.25rem;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 999px;
+      background: radial-gradient(circle, #22c55e, #0ea5e9);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.4);
+    }
+    .cv-template-4 .cv-section-title {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0.16rem 0.5rem;
+      border-radius: 999px;
+      box-shadow: 0 5px 12px rgba(148, 163, 184, 0.6);
+      color: #0f172a;
+    }
+    .cv-template-4 .cv-section-title::before {
+      background: radial-gradient(circle, #22c55e, #0ea5e9);
+    }
+    .cv-template-4 .cv-main,
+    .cv-template-4 .cv-aside {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 0.7rem;
+      padding: 0.6rem 0.65rem;
+      box-shadow: 0 9px 20px rgba(148, 163, 184, 0.55);
+      color: #0f172a;
+    }
+
+    /* 5 – Retro Neon Sidebar (Montserrat, sidebar oscuro) */
+    .cv-template-5 {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      padding: 0;
+      width: 816px;
+      min-height: 1056px;
+      background: #0b1020;
+      color: #e5e7eb;
+      font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-5::before,
+    .cv-template-5::after { display: none; }
+
+    .cv-template-5 .cv-header {
+      grid-column: 2 / 3;
+      margin: 0;
+      border-bottom: none;
+      padding: 0.9rem 1.1rem 0.7rem;
+      background: linear-gradient(135deg, #fefce8, #e0f2fe);
+      box-shadow: 0 12px 30px rgba(148, 163, 184, 0.6);
+      border-radius: 0 0 0 0.7rem;
+      color: #111827;
+    }
+    .cv-template-5 .cv-header-text { order: 1; }
+    .cv-template-5 .cv-photo-wrapper {
+      order: 2;
+      border-radius: 1.3rem;
+      border-color: #eab308;
+      background: radial-gradient(circle at 0 0, #f97316, #22c55e);
+      box-shadow: 0 12px 26px rgba(234, 179, 8, 0.7);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-5 .cv-name {
+      font-size: 1.45rem;
+      color: #1f2937;
+    }
+    .cv-template-5 .cv-title { color: #4b5563; }
+    .cv-template-5 .cv-contact { color: #6b7280; }
+
+    .cv-template-5 .cv-body {
+      grid-column: 2 / 3;
+      display: block;
+      padding: 0.5rem 1.1rem 1.1rem;
+      background: #f9fafb;
+      border-radius: 0 0 0.7rem 0;
+      color: #111827;
+      font-size: 0.78rem;
+    }
+    .cv-template-5 .cv-main { margin-bottom: 0.5rem; }
+
+    .cv-template-5 .cv-aside {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      background:
+        radial-gradient(circle at 0 0, #22c55e, transparent 60%),
+        radial-gradient(circle at 100% 0, #f97316, transparent 55%),
+        linear-gradient(180deg, #020617, #0b1020);
+      color: #f9fafb;
+      padding: 1.1rem 0.9rem 1.1rem;
+      position: relative;
+      overflow: hidden;
+      font-size: 0.78rem;
+    }
+    .cv-template-5 .cv-aside::before {
+      content: "";
+      position: absolute;
+      inset: 18% 10%;
+      background-image: radial-gradient(#22c55e 1px, transparent 1px),
+        radial-gradient(#facc15 1px, transparent 1px);
+      background-size: 12px 12px;
+      background-position: 0 0, 6px 6px;
+      opacity: 0.18;
+    }
+    .cv-template-5 .cv-aside > .cv-section {
+      position: relative;
+      z-index: 1;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 0.6rem;
+      padding: 0.45rem 0.5rem;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+      margin-bottom: 0.45rem;
+      color: #e5e7eb;
+    }
+    .cv-template-5 .cv-aside .cv-section-title {
+      border-bottom: 1px solid rgba(249, 250, 251, 0.25);
+      padding-bottom: 0.16rem;
+      margin-bottom: 0.2rem;
+      color: #facc15;
+      font-size: 0.78rem;
+    }
+    .cv-template-5 .cv-aside .cv-section-title::before {
+      background: radial-gradient(circle, #a855f7, #facc15);
+    }
+    .cv-template-5 .cv-section-title { color: #111827; }
+    .cv-template-5 .cv-section-title::before {
+      background: radial-gradient(circle, #facc15, #22c55e);
+    }
+    .cv-template-5 .cv-section {
+      background: white;
+      border-radius: 0.7rem;
+      padding: 0.5rem 0.55rem;
+      box-shadow: 0 9px 24px rgba(148, 163, 184, 0.6);
+      color: #111827;
+    }
+    .cv-template-5 .cv-list li::marker { color: #facc15; }
+
+    /* 6 – Ocean Waves (Poppins, tonos azules) */
+    .cv-template-6 {
+      background: linear-gradient(135deg, #eff6ff, #e0f2fe 35%, #cffafe);
+      color: #0f172a;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-6 .cv-header {
+      border-bottom: none;
+      margin-bottom: 0.7rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.7rem;
+      background:
+        radial-gradient(circle at 0 0, #22d3ee, transparent 60%),
+        radial-gradient(circle at 100% 0, #0ea5e9, transparent 60%),
+        linear-gradient(135deg, #0f172a, #0ea5e9);
+      color: #e0f2fe;
+      box-shadow: 0 15px 32px rgba(15, 118, 110, 0.6);
+    }
+    .cv-template-6 .cv-name {
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 1.45rem;
+      color: #e0f2fe;
+    }
+    .cv-template-6 .cv-title { color: #bae6fd; }
+    .cv-template-6 .cv-contact { color: #e0f2fe; }
+    .cv-template-6 .cv-photo-wrapper {
+      border-radius: 2rem;
+      border-color: #22d3ee;
+      background: radial-gradient(circle at 50% 0, #22d3ee, #0f172a);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-6 .cv-body {
+      margin-top: 0.7rem;
+      gap: 0.8rem;
+      color: #0f172a;
+    }
+    .cv-template-6 .cv-main,
+    .cv-template-6 .cv-aside {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 0.8rem;
+      padding: 0.6rem 0.65rem;
+      box-shadow: 0 9px 22px rgba(148, 163, 184, 0.45);
+      border: 1px solid rgba(191, 219, 254, 0.8);
+      color: #0f172a;
+    }
+    .cv-template-6 .cv-section-title {
+      color: #0f172a;
+    }
+    .cv-template-6 .cv-section-title::before {
+      background: radial-gradient(circle, #22d3ee, #0ea5e9);
+    }
+    .cv-template-6 .cv-list li::marker { color: #0ea5e9; }
+
+    /* 7 – Sunset Gradient (Poppins, cálido) */
+    .cv-template-7 {
+      background: linear-gradient(135deg, #fee2e2, #f97316 45%, #22c55e);
+      color: #111827;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-7 .cv-header {
+      border-bottom: none;
+      margin: -0.1rem -0.3rem 0.7rem;
+      padding: 0.9rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 0.7rem;
+      box-shadow: 0 16px 32px rgba(248, 113, 113, 0.55);
+      color: #7f1d1d;
+    }
+    .cv-template-7 .cv-name {
+      color: #b91c1c;
+      letter-spacing: 0.08em;
+      font-size: 1.45rem;
+    }
+    .cv-template-7 .cv-title { color: #f97316; }
+    .cv-template-7 .cv-contact { color: #9a3412; }
+    .cv-template-7 .cv-photo-wrapper {
+      border-radius: 1.1rem;
+      border-color: #f97316;
+      background: radial-gradient(circle at 0 0, #f97316, #22c55e);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-7 .cv-body {
+      margin-top: 0.7rem;
+      color: #111827;
+    }
+    .cv-template-7 .cv-main,
+    .cv-template-7 .cv-aside {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 0.8rem;
+      padding: 0.6rem 0.7rem;
+      box-shadow: 0 9px 22px rgba(248, 113, 113, 0.45);
+      color: #111827;
+    }
+    .cv-template-7 .cv-section-title {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 0.14rem 0.5rem;
+      border-radius: 999px;
+      color: #7f1d1d;
+    }
+    .cv-template-7 .cv-section-title::before {
+      background: radial-gradient(circle, #f97316, #22c55e);
+    }
+    .cv-template-7 .cv-list li::marker { color: #b91c1c; }
+
+    /* 8 – Mono Minimal (fuente sistema, muy neutro) */
+    .cv-template-8 {
+      background: #f9fafb;
+      color: #111827;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-8::before,
+    .cv-template-8::after { display: none; }
+    .cv-template-8 .cv-header {
+      border-bottom: 2px solid #111827;
+      border-radius: 0;
+      margin: 0 0 0.6rem;
+      padding-bottom: 0.45rem;
+      color: #111827;
+    }
+    .cv-template-8 .cv-name {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 1.4rem;
+      color: #111827;
+    }
+    .cv-template-8 .cv-title {
+      color: #111827;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .cv-template-8 .cv-contact {
+      color: #374151;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 0.3rem;
+      padding-top: 0.25rem;
+    }
+    .cv-template-8 .cv-photo-wrapper {
+      border-radius: 0;
+      border-color: #111827;
+      box-shadow: none;
+      background: #111827;
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-8 .cv-body {
+      margin-top: 0.6rem;
+      gap: 0.7rem;
+      color: #111827;
+    }
+    .cv-template-8 .cv-main,
+    .cv-template-8 .cv-aside {
+      background: white;
+      border-radius: 0;
+      padding: 0.55rem 0.6rem;
+      border: 1px solid #e5e7eb;
+      box-shadow: none;
+      color: #111827;
+    }
+    .cv-template-8 .cv-section-title {
+      letter-spacing: 0.18em;
+      font-size: 0.78rem;
+      border-bottom: 1px solid #111827;
+      padding-bottom: 0.16rem;
+      margin-bottom: 0.18rem;
+      color: #111827;
+    }
+    .cv-template-8 .cv-section-title::before {
+      background: #111827;
+    }
+    .cv-template-8 .cv-list li::marker { color: #111827; }
+
+    /* 9 – Fresh Mint (Poppins, verdes frescos) */
+    .cv-template-9 {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5 40%, #e0f2fe);
+      color: #064e3b;
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    .cv-template-9 .cv-header {
+      border-bottom: none;
+      margin-bottom: 0.7rem;
+      border-radius: 0.7rem;
+      padding: 0.7rem 0.9rem;
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      color: #ecfdf5;
+      box-shadow: 0 15px 32px rgba(34, 197, 94, 0.6);
+    }
+    .cv-template-9 .cv-name {
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 1.45rem;
+      color: #ecfdf5;
+    }
+    .cv-template-9 .cv-title { color: #bbf7d0; }
+    .cv-template-9 .cv-contact { color: #dcfce7; }
+    .cv-template-9 .cv-photo-wrapper {
+      border-radius: 50%;
+      border-color: #bbf7d0;
+      background: radial-gradient(circle at 0 0, #22c55e, #059669);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-9 .cv-body {
+      margin-top: 0.7rem;
+      color: #064e3b;
+    }
+    .cv-template-9 .cv-main,
+    .cv-template-9 .cv-aside {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 0.8rem;
+      padding: 0.6rem 0.65rem;
+      box-shadow: 0 9px 24px rgba(34, 197, 94, 0.4);
+      color: #064e3b;
+    }
+    .cv-template-9 .cv-section-title {
+      background: rgba(236, 253, 245, 0.9);
+      padding: 0.13rem 0.5rem;
+      border-radius: 999px;
+      color: #065f46;
+      font-size: 0.78rem;
+    }
+    .cv-template-9 .cv-section-title::before {
+      background: radial-gradient(circle, #22c55e, #0d9488);
+    }
+    .cv-template-9 .cv-list li::marker { color: #16a34a; }
+
+    /* 10 – Lavender Dream (Playfair Display, violeta elegante) */
+    .cv-template-10 {
+      background: radial-gradient(circle at top left, #eef2ff, #f5f3ff 40%, #fdf2ff);
+      color: #312e81;
+      font-family: 'Playfair Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', serif;
+    }
+    .cv-template-10 .cv-header {
+      border-bottom: none;
+      margin-bottom: 0.7rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.8rem;
+      background:
+        radial-gradient(circle at 0 0, #a855f7, transparent 60%),
+        radial-gradient(circle at 100% 0, #ec4899, transparent 60%),
+        linear-gradient(135deg, #4f46e5, #a855f7);
+      color: #eef2ff;
+      box-shadow: 0 16px 36px rgba(76, 81, 191, 0.7);
+    }
+    .cv-template-10 .cv-name {
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 1.45rem;
+      color: #eef2ff;
+    }
+    .cv-template-10 .cv-title { color: #e0e7ff; }
+    .cv-template-10 .cv-contact { color: #ede9fe; }
+    .cv-template-10 .cv-photo-wrapper {
+      border-radius: 50%;
+      border-color: #f9a8d4;
+      background: radial-gradient(circle at 0 0, #ec4899, #4f46e5);
+      box-shadow: 0 14px 30px rgba(236, 72, 153, 0.7);
+      width: 80px;
+      height: 80px;
+    }
+    .cv-template-10 .cv-body {
+      margin-top: 0.7rem;
+      color: #312e81;
+    }
+    .cv-template-10 .cv-main,
+    .cv-template-10 .cv-aside {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 0.8rem;
+      padding: 0.6rem 0.65rem;
+      box-shadow: 0 10px 26px rgba(148, 163, 184, 0.5);
+      border: 1px solid rgba(199, 210, 254, 0.8);
+      color: #312e81;
+    }
+    .cv-template-10 .cv-section-title {
+      background: rgba(238, 242, 255, 0.9);
+      padding: 0.13rem 0.5rem;
+      border-radius: 999px;
+      color: #312e81;
+      font-size: 0.78rem;
+    }
+    .cv-template-10 .cv-section-title::before {
+      background: radial-gradient(circle, #a855f7, #ec4899);
+    }
+    .cv-template-10 .cv-list li::marker { color: #7c3aed; }
+
+    /* Responsivo */
+    @media (max-width: 900px) {
+      #cv-preview,
+      .cv-template-5 {
+        width: 100%;
+        min-width: 100%;
+      }
+      .cv-template-5 {
+        grid-template-columns: 1fr;
+      }
+      .cv-template-5 .cv-aside {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+        border-radius: 0 0 0.7rem 0.7rem;
+      }
+      .cv-template-5 .cv-header,
+      .cv-template-5 .cv-body {
+        grid-column: 1 / 2;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- FORMULARIO -->
+    <section class="panel builder">
+      <h2 style="font-size: 1rem; margin-bottom: 0.4rem;">
+        Generador de CV
+      </h2>
+      <p style="font-size: 0.8rem; color:#4b5563; margin-bottom:0.6rem;">
+        Elige un estilo tipo Canva/Genially, llena las secciones y genera tu CV en PDF (Carta).
+      </p>
+
+      <div class="field-group">
+        <label for="template">Estilo de CV</label>
+        <select id="template">
+          <option value="1">1 – Aurora Pastel</option>
+          <option value="2">2 – Neón Night</option>
+          <option value="3">3 – Candy Cards</option>
+          <option value="4">4 – Diagonal Ribbon</option>
+          <option value="5">5 – Retro Neon Sidebar</option>
+          <option value="6">6 – Ocean Waves</option>
+          <option value="7">7 – Sunset Gradient</option>
+          <option value="8">8 – Mono Minimal</option>
+          <option value="9">9 – Fresh Mint</option>
+          <option value="10">10 – Lavender Dream</option>
+        </select>
+        <div class="help-text">
+          Puedes cambiar de plantilla en cualquier momento.
+        </div>
+      </div>
+
+      <!-- SECCIÓN: FUENTE Y TAMAÑO -->
+      <div class="font-settings">
+        <div class="field-group" style="margin-bottom:0.3rem;">
+          <label for="fontFamily">Fuente del CV</label>
+          <select id="fontFamily">
+            <option value="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+              Predeterminada (Sistema)
+            </option>
+            <option value="'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+              Poppins (moderna)
+            </option>
+            <option value="'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+              Montserrat (limpia)
+            </option>
+            <option value="'Roboto Slab', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', serif">
+              Roboto Slab (serif)
+            </option>
+            <option value="'Playfair Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', serif">
+              Playfair Display (elegante)
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group" style="margin-bottom:0.3rem;">
+          <label for="fontSize">Tamaño base del texto</label>
+          <div class="font-slider-row">
+            <input type="number" id="fontSize" min="11" max="14" step="0.5" value="12" />
+            <span style="font-size:0.75rem; color:#374151;">
+              <span id="fontSizeLabel">12</span> pt aprox.
+            </span>
+          </div>
+          <div class="help-text">
+            Ajusta la escala general (títulos, subtítulos, etc).
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-bottom:0;">
+          <label for="bodyFontSize">Tamaño del cuerpo</label>
+          <div class="font-slider-row">
+            <input type="number" id="bodyFontSize" min="10" max="13" step="0.5" value="11" />
+            <span style="font-size:0.75rem; color:#374151;">
+              <span id="bodyFontSizeLabel">11</span> pt aprox.
+            </span>
+          </div>
+          <div class="help-text">
+            Esto cambia el tamaño del texto en Perfil, Experiencia, Educación, Proyectos, Habilidades e Idiomas.
+          </div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="section-tabs">
+        <button type="button" class="section-tab" data-target="sec-datos">Datos</button>
+        <button type="button" class="section-tab" data-target="sec-perfil">Perfil</button>
+        <button type="button" class="section-tab" data-target="sec-experiencia">Experiencia</button>
+        <button type="button" class="section-tab" data-target="sec-educacion">Educación</button>
+        <button type="button" class="section-tab" data-target="sec-habilidades">Habilidades</button>
+        <button type="button" class="section-tab" data-target="sec-proyectos">Proyectos</button>
+        <button type="button" class="section-tab" data-target="sec-idiomas">Idiomas</button>
+        <button type="button" class="section-tab" data-target="sec-foto">Foto</button>
+      </div>
+      <p class="help-text" style="margin-bottom:0.2rem;">
+        Presiona una sección y usa el botón <strong>+ Añadir</strong> para agregar más elementos.
+      </p>
+
+      <!-- DATOS -->
+      <div id="sec-datos" class="section-form">
+        <div class="section-form-inner">
+          <div class="field-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" placeholder="Ej: Job Anleu" />
+          </div>
+          <div class="field-group">
+            <label for="titulo">Puesto / Título profesional</label>
+            <input type="text" id="titulo" placeholder="Ej: Ingeniero en Sistemas" />
+          </div>
+          <div class="two-cols">
+            <div class="field-group">
+              <label for="email">Correo electrónico</label>
+              <input type="email" id="email" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="field-group">
+              <label for="telefono">Teléfono</label>
+              <input type="tel" id="telefono" placeholder="+502 0000-0000" />
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="direccion">Dirección (opcional)</label>
+            <input type="text" id="direccion" placeholder="Ciudad, País" />
+          </div>
+        </div>
+      </div>
+
+      <!-- PERFIL -->
+      <div id="sec-perfil" class="section-form">
+        <div class="section-form-inner">
+          <div class="field-group">
+            <label for="perfil">Perfil / Resumen profesional</label>
+            <textarea id="perfil" rows="3"
+              placeholder="Breve resumen de tu experiencia, fortalezas y objetivos."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPERIENCIA (repetible) -->
+      <div id="sec-experiencia" class="section-form">
+        <div class="section-form-inner">
+          <div class="repeat-group" id="exp-items"></div>
+          <button type="button" id="add-exp" class="add-item-btn">+ Añadir experiencia</button>
+          <div class="help-text">
+            Ejemplo: Empresa X, Puesto, 2022–2024, breve descripción de logros.
+          </div>
+        </div>
+      </div>
+
+      <!-- EDUCACIÓN (repetible) -->
+      <div id="sec-educacion" class="section-form">
+        <div class="section-form-inner">
+          <div class="repeat-group" id="edu-items"></div>
+          <button type="button" id="add-edu" class="add-item-btn">+ Añadir estudio</button>
+          <div class="help-text">
+            Ejemplo: Licenciatura en X, Universidad Y, 2019–2023.
+          </div>
+        </div>
+      </div>
+
+      <!-- HABILIDADES (repetible) -->
+      <div id="sec-habilidades" class="section-form">
+        <div class="section-form-inner">
+          <div class="repeat-group" id="skill-items"></div>
+          <button type="button" id="add-skill" class="add-item-btn">+ Añadir habilidad</button>
+          <div class="help-text">
+            Ejemplo: Programación en C, Diseño de bases de datos, Trabajo en equipo.
+          </div>
+        </div>
+      </div>
+
+      <!-- PROYECTOS (repetible) -->
+      <div id="sec-proyectos" class="section-form">
+        <div class="section-form-inner">
+          <div class="repeat-group" id="proj-items"></div>
+          <button type="button" id="add-proj" class="add-item-btn">+ Añadir proyecto</button>
+          <div class="help-text">
+            Ejemplo: Sistema de inventario – App web con React y PostgreSQL.
+          </div>
+        </div>
+      </div>
+
+      <!-- IDIOMAS (repetible) -->
+      <div id="sec-idiomas" class="section-form">
+        <div class="section-form-inner">
+          <div class="repeat-group" id="lang-items"></div>
+          <button type="button" id="add-lang" class="add-item-btn">+ Añadir idioma</button>
+          <div class="help-text">
+            Ejemplo: Español – Nativo, Inglés – B2, etc.
+          </div>
+        </div>
+      </div>
+
+      <!-- FOTO -->
+      <div id="sec-foto" class="section-form">
+        <div class="section-form-inner">
+          <div class="field-group">
+            <label for="foto">Foto para el CV (solo se usa en tu navegador)</label>
+            <input type="file" id="foto" accept="image/*" />
+            <div class="help-text">
+              Se carga únicamente en este HTML (no se sube a ningún servidor).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button id="btn-update" type="button" class="secondary">
+          🔄 Actualizar vista previa
+        </button>
+        <button id="btn-pdf" type="button" class="primary">
+          📄 Descargar PDF
+        </button>
+      </div>
+      <p class="help-text" style="margin-top:0.4rem;">
+        Si llenas muchas secciones, puede crearse una segunda página. Para que quepa en una sola hoja, resume los textos.
+      </p>
+    </section>
+
+    <!-- PREVIEW -->
+    <section class="panel preview-wrapper">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:1rem;">Vista previa del CV (Carta)</h2>
+        <small style="color:#6b7280;">Este contenido se convertirá en PDF tamaño carta.</small>
+      </div>
+
+      <div class="preview-container">
+        <article id="cv-preview" class="cv cv-template-1">
+          <header class="cv-header">
+            <div class="cv-header-text">
+              <h1 id="cv-name" class="cv-name">Nombre Apellido</h1>
+              <p id="cv-title" class="cv-title">Puesto objetivo</p>
+              <p id="cv-contact" class="cv-contact">
+                correo@ejemplo.com · +502 0000-0000 · Ciudad, País
+              </p>
+            </div>
+            <div class="cv-photo-wrapper" id="cv-photo-wrapper">
+              <img id="cv-photo" alt="Foto de perfil" />
+            </div>
+          </header>
+
+          <div class="cv-body">
+            <main class="cv-main">
+              <section class="cv-section">
+                <h2 class="cv-section-title">Perfil</h2>
+                <p id="cv-summary">
+                  Breve resumen profesional. Describe tu experiencia, áreas fuertes y lo que
+                  buscas en tu siguiente reto.
+                </p>
+              </section>
+
+              <section class="cv-section">
+                <h2 class="cv-section-title">Experiencia</h2>
+                <ul id="cv-experience-list" class="cv-list">
+                  <li>Empresa X – Puesto (Año–Año): descripción breve.</li>
+                  <li>Empresa Y – Puesto (Año–Año): descripción breve.</li>
+                </ul>
+              </section>
+
+              <section class="cv-section">
+                <h2 class="cv-section-title">Educación</h2>
+                <ul id="cv-education-list" class="cv-list">
+                  <li>Grado / Carrera – Institución (Año).</li>
+                </ul>
+              </section>
+
+              <section class="cv-section">
+                <h2 class="cv-section-title">Proyectos</h2>
+                <ul id="cv-projects-list" class="cv-list">
+                  <li>Proyecto destacado – breve descripción del impacto.</li>
+                </ul>
+              </section>
+            </main>
+
+            <aside class="cv-aside">
+              <section class="cv-section">
+                <h2 class="cv-section-title">Habilidades</h2>
+                <ul id="cv-skills-list" class="cv-list">
+                  <li>Habilidad 1</li>
+                  <li>Habilidad 2</li>
+                </ul>
+              </section>
+
+              <section class="cv-section">
+                <h2 class="cv-section-title">Idiomas</h2>
+                <ul id="cv-languages-list" class="cv-list">
+                  <li>Español – Nativo</li>
+                  <li>Inglés – Intermedio</li>
+                </ul>
+              </section>
+            </aside>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function textOrPlaceholder(value, placeholder) {
+      const v = (value || "").trim();
+      return v === "" ? placeholder : v;
+    }
+
+    // Map de fuente por plantilla (coinciden con los values del select)
+    const TEMPLATE_FONTS = {
+      "1": "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "2": "'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "3": "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "4": "'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "5": "'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "6": "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "7": "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "8": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "9": "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "10": "'Playfair Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', serif"
+    };
+
+    /* ====== Ítems repetibles ====== */
+    function createExpItem() {
+      const div = document.createElement("div");
+      div.className = "repeat-item exp-item";
+      div.innerHTML = `
+        <div class="repeat-item-header">
+          <span class="repeat-item-title">Experiencia</span>
+          <button type="button" class="remove-item" title="Eliminar experiencia">✕</button>
+        </div>
+        <div class="two-cols">
+          <div class="field-group">
+            <label>Empresa</label>
+            <input type="text" class="exp-company" placeholder="Empresa X" />
+          </div>
+          <div class="field-group">
+            <label>Puesto</label>
+            <input type="text" class="exp-role" placeholder="Desarrollador" />
+          </div>
+        </div>
+        <div class="two-cols">
+          <div class="field-group">
+            <label>Periodo</label>
+            <input type="text" class="exp-period" placeholder="2022–2024" />
+          </div>
+          <div class="field-group">
+            <label>Ubicación (opcional)</label>
+            <input type="text" class="exp-location" placeholder="Guatemala, GT" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Descripción breve</label>
+          <textarea rows="2" class="exp-desc" placeholder="Logros o responsabilidades clave."></textarea>
+        </div>
+      `;
+      setupRemoveButton(div);
+      return div;
+    }
+
+    function createEduItem() {
+      const div = document.createElement("div");
+      div.className = "repeat-item edu-item";
+      div.innerHTML = `
+        <div class="repeat-item-header">
+          <span class="repeat-item-title">Estudio</span>
+          <button type="button" class="remove-item" title="Eliminar estudio">✕</button>
+        </div>
+        <div class="field-group">
+          <label>Título / Grado</label>
+          <input type="text" class="edu-degree" placeholder="Licenciatura en Sistemas" />
+        </div>
+        <div class="two-cols">
+          <div class="field-group">
+            <label>Institución</label>
+            <input type="text" class="edu-school" placeholder="Universidad X" />
+          </div>
+          <div class="field-group">
+            <label>Periodo / Año</label>
+            <input type="text" class="edu-period" placeholder="2019–2023" />
+          </div>
+        </div>
+      `;
+      setupRemoveButton(div);
+      return div;
+    }
+
+    function createSkillItem() {
+      const div = document.createElement("div");
+      div.className = "repeat-item skill-item";
+      div.innerHTML = `
+        <div class="repeat-item-header">
+          <span class="repeat-item-title">Habilidad</span>
+          <button type="button" class="remove-item" title="Eliminar habilidad">✕</button>
+        </div>
+        <div class="field-group" style="margin-bottom:0;">
+          <input type="text" class="skill-name" placeholder="Ej: Programación en C/C++" />
+        </div>
+      `;
+      setupRemoveButton(div);
+      return div;
+    }
+
+    function createProjItem() {
+      const div = document.createElement("div");
+      div.className = "repeat-item proj-item";
+      div.innerHTML = `
+        <div class="repeat-item-header">
+          <span class="repeat-item-title">Proyecto</span>
+          <button type="button" class="remove-item" title="Eliminar proyecto">✕</button>
+        </div>
+        <div class="field-group">
+          <label>Nombre del proyecto</label>
+          <input type="text" class="proj-name" placeholder="Sistema de inventario" />
+        </div>
+        <div class="field-group">
+          <label>Descripción breve</label>
+          <textarea rows="2" class="proj-desc" placeholder="Tecnologías usadas y objetivo del proyecto."></textarea>
+        </div>
+      `;
+      setupRemoveButton(div);
+      return div;
+    }
+
+    function createLangItem() {
+      const div = document.createElement("div");
+      div.className = "repeat-item lang-item";
+      div.innerHTML = `
+        <div class="repeat-item-header">
+          <span class="repeat-item-title">Idioma</span>
+          <button type="button" class="remove-item" title="Eliminar idioma">✕</button>
+        </div>
+        <div class="two-cols">
+          <div class="field-group">
+            <label>Idioma</label>
+            <input type="text" class="lang-name" placeholder="Inglés" />
+          </div>
+          <div class="field-group">
+            <label>Nivel</label>
+            <input type="text" class="lang-level" placeholder="B2 / Intermedio" />
+          </div>
+        </div>
+      `;
+      setupRemoveButton(div);
+      return div;
+    }
+
+    function setupRemoveButton(container) {
+      const btn = container.querySelector(".remove-item");
+      if (!btn) return;
+      btn.addEventListener("click", () => {
+        container.remove();
+        updatePreview();
+      });
+    }
+
+    function initRepeatGroups() {
+      const expGroup = document.getElementById("exp-items");
+      const eduGroup = document.getElementById("edu-items");
+      const skillGroup = document.getElementById("skill-items");
+      const projGroup = document.getElementById("proj-items");
+      const langGroup = document.getElementById("lang-items");
+
+      expGroup.appendChild(createExpItem());
+      eduGroup.appendChild(createEduItem());
+      skillGroup.appendChild(createSkillItem());
+      projGroup.appendChild(createProjItem());
+      langGroup.appendChild(createLangItem());
+
+      document.getElementById("add-exp").addEventListener("click", () => {
+        expGroup.appendChild(createExpItem());
+        updatePreview();
+      });
+
+      document.getElementById("add-edu").addEventListener("click", () => {
+        eduGroup.appendChild(createEduItem());
+        updatePreview();
+      });
+
+      document.getElementById("add-skill").addEventListener("click", () => {
+        skillGroup.appendChild(createSkillItem());
+        updatePreview();
+      });
+
+      document.getElementById("add-proj").addEventListener("click", () => {
+        projGroup.appendChild(createProjItem());
+        updatePreview();
+      });
+
+      document.getElementById("add-lang").addEventListener("click", () => {
+        langGroup.appendChild(createLangItem());
+        updatePreview();
+      });
+    }
+
+    /* ====== Actualizar fuente y tamaños ====== */
+    function updateFontStyles() {
+      const cv = document.getElementById("cv-preview");
+      const fontFamily = document.getElementById("fontFamily").value;
+      const fontSize = document.getElementById("fontSize").value;
+      const bodyFontSize = document.getElementById("bodyFontSize").value;
+
+      cv.style.fontFamily = fontFamily;
+      cv.style.fontSize = fontSize + "px";
+
+      const labelBase = document.getElementById("fontSizeLabel");
+      if (labelBase) labelBase.textContent = fontSize;
+
+      const cvBody = document.querySelector("#cv-preview .cv-body");
+      if (cvBody) {
+        cvBody.style.fontSize = bodyFontSize + "px";
+      }
+      const labelBody = document.getElementById("bodyFontSizeLabel");
+      if (labelBody) labelBody.textContent = bodyFontSize;
+    }
+
+    /* ====== Actualizar vista previa ====== */
+    function updatePreview() {
+      const nombre    = document.getElementById("nombre").value;
+      const titulo    = document.getElementById("titulo").value;
+      const email     = document.getElementById("email").value;
+      const telefono  = document.getElementById("telefono").value;
+      const direccion = document.getElementById("direccion").value;
+      const perfil    = document.getElementById("perfil").value;
+
+      document.getElementById("cv-name").textContent = textOrPlaceholder(
+        nombre, "Nombre Apellido"
+      );
+      document.getElementById("cv-title").textContent = textOrPlaceholder(
+        titulo, "Puesto objetivo"
+      );
+
+      const contactParts = [];
+      if (email.trim()) contactParts.push(email.trim());
+      if (telefono.trim()) contactParts.push(telefono.trim());
+      if (direccion.trim()) contactParts.push(direccion.trim());
+
+      document.getElementById("cv-contact").textContent =
+        contactParts.length > 0
+          ? contactParts.join(" · ")
+          : "correo@ejemplo.com · +502 0000-0000 · Ciudad, País";
+
+      document.getElementById("cv-summary").textContent = textOrPlaceholder(
+        perfil,
+        "Breve resumen profesional. Describe tu experiencia, áreas fuertes y lo que buscas en tu siguiente reto."
+      );
+
+      // EXPERIENCIA
+      const expList = document.getElementById("cv-experience-list");
+      expList.innerHTML = "";
+      document.querySelectorAll(".exp-item").forEach(item => {
+        const empresa   = item.querySelector(".exp-company").value.trim();
+        const puesto    = item.querySelector(".exp-role").value.trim();
+        const periodo   = item.querySelector(".exp-period").value.trim();
+        const ubicacion = item.querySelector(".exp-location").value.trim();
+        const desc      = item.querySelector(".exp-desc").value.trim();
+
+        if (!empresa && !puesto && !periodo && !desc) return;
+
+        let text = "";
+        if (empresa || puesto) {
+          text += (empresa || "") + (empresa && puesto ? " – " : "") + (puesto || "");
+        }
+        if (periodo) {
+          text += (text ? " (" + periodo + ")" : periodo);
+        }
+        if (ubicacion) {
+          text += text ? " · " + ubicacion : ubicacion;
+        }
+        if (desc) {
+          text += text ? ": " + desc : desc;
+        }
+
+        if (text) {
+          const li = document.createElement("li");
+          li.textContent = text;
+          expList.appendChild(li);
+        }
+      });
+      if (expList.children.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Empresa X – Puesto (Año–Año): descripción breve.";
+        expList.appendChild(li);
+      }
+
+      // EDUCACIÓN
+      const eduList = document.getElementById("cv-education-list");
+      eduList.innerHTML = "";
+      document.querySelectorAll(".edu-item").forEach(item => {
+        const degree = item.querySelector(".edu-degree").value.trim();
+        const school = item.querySelector(".edu-school").value.trim();
+        const period = item.querySelector(".edu-period").value.trim();
+
+        if (!degree && !school && !period) return;
+
+        let text = "";
+        if (degree) text += degree;
+        if (school) text += (text ? " – " : "") + school;
+        if (period) text += (text ? " (" : "") + period + (text ? ")" : "");
+        const li = document.createElement("li");
+        li.textContent = text;
+        eduList.appendChild(li);
+      });
+      if (eduList.children.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Grado / Carrera – Institución (Año).";
+        eduList.appendChild(li);
+      }
+
+      // HABILIDADES
+      const skillList = document.getElementById("cv-skills-list");
+      skillList.innerHTML = "";
+      document.querySelectorAll(".skill-item").forEach(item => {
+        const skill = item.querySelector(".skill-name").value.trim();
+        if (!skill) return;
+        const li = document.createElement("li");
+        li.textContent = skill;
+        skillList.appendChild(li);
+      });
+      if (skillList.children.length === 0) {
+        skillList.innerHTML = "<li>Habilidad 1</li><li>Habilidad 2</li>";
+      }
+
+      // PROYECTOS
+      const projList = document.getElementById("cv-projects-list");
+      projList.innerHTML = "";
+      document.querySelectorAll(".proj-item").forEach(item => {
+        const name = item.querySelector(".proj-name").value.trim();
+        const desc = item.querySelector(".proj-desc").value.trim();
+        if (!name && !desc) return;
+        const li = document.createElement("li");
+        li.textContent = desc ? name + ": " + desc : name;
+        projList.appendChild(li);
+      });
+      if (projList.children.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Proyecto destacado – breve descripción del impacto.";
+        projList.appendChild(li);
+      }
+
+      // IDIOMAS
+      const langList = document.getElementById("cv-languages-list");
+      langList.innerHTML = "";
+      document.querySelectorAll(".lang-item").forEach(item => {
+        const lang  = item.querySelector(".lang-name").value.trim();
+        const level = item.querySelector(".lang-level").value.trim();
+        if (!lang && !level) return;
+        const li = document.createElement("li");
+        li.textContent = level ? `${lang} – ${level}` : lang;
+        langList.appendChild(li);
+      });
+      if (langList.children.length === 0) {
+        langList.innerHTML = "<li>Español – Nativo</li><li>Inglés – Intermedio</li>";
+      }
+    }
+
+    /* ===== Cambiar plantilla ===== */
+    function changeTemplate() {
+      const selected = document.getElementById("template").value;
+      const cv = document.getElementById("cv-preview");
+      cv.className = "cv cv-template-" + selected;
+
+      // Cambiar fuente por defecto según la plantilla
+      const fontSelect = document.getElementById("fontFamily");
+      const defaultFont = TEMPLATE_FONTS[selected];
+      if (defaultFont) {
+        fontSelect.value = defaultFont;
+      }
+      updateFontStyles();
+    }
+
+    /* ===== PDF: formato carta ===== */
+    function downloadPDF() {
+      const element = document.getElementById("cv-preview");
+      const nombre  = document.getElementById("nombre").value.trim();
+      const filename = "CV_" + (nombre || "sin_nombre") + ".pdf";
+
+      const opt = {
+        margin:       [0, 0, 0, 0],
+        filename:     filename,
+        image:        { type: "jpeg", quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: "mm", format: "letter", orientation: "portrait" },
+        pagebreak:    { mode: ["css", "legacy"] },
+      };
+
+      html2pdf().set(opt).from(element).save();
+    }
+
+    /* ===== Tabs secciones ===== */
+    function setupSectionTabs() {
+      const tabs = document.querySelectorAll(".section-tab");
+      const sections = document.querySelectorAll(".section-form");
+
+      function toggleSection(targetId) {
+        sections.forEach(sec => {
+          if (sec.id === targetId) {
+            sec.classList.toggle("active");
+          } else {
+            sec.classList.remove("active");
+          }
+        });
+
+        tabs.forEach(btn => {
+          if (btn.dataset.target === targetId &&
+              document.getElementById(targetId).classList.contains("active")) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+      }
+
+      tabs.forEach(btn => {
+        btn.addEventListener("click", () => toggleSection(btn.dataset.target));
+      });
+
+      if (tabs[0]) {
+        const firstId = tabs[0].dataset.target;
+        document.getElementById(firstId).classList.add("active");
+        tabs[0].classList.add("active");
+      }
+    }
+
+    /* ===== Foto ===== */
+    function setupPhotoUpload() {
+      const input = document.getElementById("foto");
+      const img = document.getElementById("cv-photo");
+      img.style.display = "none";
+
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+        if (!file) {
+          img.src = "";
+          img.style.display = "none";
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.src = e.target.result;
+          img.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ===== Listeners globales ===== */
+    document.getElementById("btn-update").addEventListener("click", () => {
+      updatePreview();
+      updateFontStyles();
+    });
+
+    document.getElementById("btn-pdf").addEventListener("click", function () {
+      updatePreview();
+      updateFontStyles();
+      downloadPDF();
+    });
+
+    document.getElementById("template").addEventListener("change", function () {
+      changeTemplate();
+      updatePreview();
+    });
+
+    // Cambios en fuente y tamaños
+    document.getElementById("fontFamily").addEventListener("change", () => {
+      updateFontStyles();
+    });
+    document.getElementById("fontSize").addEventListener("input", () => {
+      updateFontStyles();
+    });
+    document.getElementById("bodyFontSize").addEventListener("input", () => {
+      updateFontStyles();
+    });
+
+    // Inputs del formulario (menos foto y los number de tamaños)
+    document.querySelector(".builder").addEventListener("input", (e) => {
+      if (e.target.id === "foto" ||
+          e.target.id === "fontSize" ||
+          e.target.id === "bodyFontSize") return;
+      updatePreview();
+    });
+
+    // Inicialización
+    setupSectionTabs();
+    setupPhotoUpload();
+    initRepeatGroups();
+    changeTemplate();
+    updatePreview();
+    updateFontStyles();
+  </script>
+</body>
+</html>
